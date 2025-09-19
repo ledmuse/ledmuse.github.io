@@ -31,14 +31,24 @@
     .card:hover {
       transform: scale(1.05);
     }
-    .card img {
+    .card img.preview {
       width: 100%;
       display: block;
     }
-    .flag {
-      width: 40px;
-      margin: 10px auto;
-      display: block;
+    .label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 10px;
+    }
+    .label img.flag {
+      width: 28px;
+      height: auto;
+    }
+    .label span {
+      font-size: 16px;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -47,16 +57,20 @@
   <div class="container">
     <!-- Türkçe Kullanım Kılavuzu -->
     <a class="card" href="https://www.youtube.com/playlist?list=PLxlT6Byl-RFZ_pdPkrpHCoQgz5rwOnPUk" target="_blank">
-      <img src="https://img.youtube.com/vi/2K_ZR3o8RIQ/hqdefault.jpg" alt="Türkçe Kullanım Kılavuzu">
-      <img class="flag" src="https://upload.wikimedia.org/wikipedia/commons/b/b4/Flag_of_Turkey.svg" alt="Türkçe Bayrak">
-      <p>Türkçe Kullanım Kılavuzu</p>
+      <img class="preview" src="https://img.youtube.com/vi/2K_ZR3o8RIQ/hqdefault.jpg" alt="Türkçe Kullanım Kılavuzu">
+      <div class="label">
+        <img class="flag" src="https://flagcdn.com/w320/tr.png" alt="Türkçe Bayrak">
+        <span>Türkçe Kullanım Kılavuzu</span>
+      </div>
     </a>
 
     <!-- İngilizce Kullanım Kılavuzu -->
     <a class="card" href="https://www.youtube.com/playlist?list=PLxlT6Byl-RFa5C0V70OBwMUIWXreWsSVV" target="_blank">
-      <img src="https://img.youtube.com/vi/Ts8E5pzyhYI/hqdefault.jpg" alt="English User Guide">
-      <img class="flag" src="https://upload.wikimedia.org/wikipedia/en/a/a4/Flag_of_the_United_Kingdom.svg" alt="English Flag">
-      <p>English User Guide</p>
+      <img class="preview" src="https://img.youtube.com/vi/Ts8E5pzyhYI/hqdefault.jpg" alt="English User Guide">
+      <div class="label">
+        <img class="flag" src="https://flagcdn.com/w320/gb.png" alt="English Flag">
+        <span>English User Guide</span>
+      </div>
     </a>
   </div>
 

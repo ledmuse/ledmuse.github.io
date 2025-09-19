@@ -11,20 +11,12 @@
       line-height: 1.6;
       text-align: center;
     }
-    .product-photo {
-      max-width: 500px;
-      margin: 0 auto 30px;
-    }
-    .product-photo img {
-      width: 100%;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    }
     .container {
       display: flex;
-      justify-content: center;
+      flex-direction: column; /* alt alta dizilsin */
+      align-items: center;
       gap: 30px;
-      flex-wrap: wrap;
+      margin-top: 20px;
     }
     .card {
       width: 320px;
@@ -43,30 +35,30 @@
       width: 100%;
       display: block;
     }
-    .card h2 {
-      margin: 15px 0;
+    .flag {
+      width: 40px;
+      margin: 10px auto;
+      display: block;
     }
   </style>
 </head>
 <body>
 
-  <!-- Ürün Fotoğrafı -->
-  <div class="product-photo">
-    <img src="sftr-led-dimmer-kapak.jpg" alt="Ürün Fotoğrafı">
-  </div>
-
   <div class="container">
     <!-- Türkçe Kullanım Kılavuzu -->
     <a class="card" href="https://www.youtube.com/playlist?list=PLxlT6Byl-RFZ_pdPkrpHCoQgz5rwOnPUk" target="_blank">
-      <img src="sftr-led-dimmer-kapak.jpg" alt="Türkçe Kullanım Kılavuzu">
-      <h2>🇹🇷 Türkçe Kullanım Kılavuzu</h2>
+      <img src="https://img.youtube.com/vi/2K_ZR3o8RIQ/hqdefault.jpg" alt="Türkçe Kullanım Kılavuzu">
+      <img class="flag" src="https://upload.wikimedia.org/wikipedia/commons/b/b4/Flag_of_Turkey.svg" alt="Türkçe Bayrak">
+      <p>Türkçe Kullanım Kılavuzu</p>
     </a>
 
     <!-- İngilizce Kullanım Kılavuzu -->
     <a class="card" href="https://www.youtube.com/playlist?list=PLxlT6Byl-RFa5C0V70OBwMUIWXreWsSVV" target="_blank">
-      <img src="sftr-led-dimmer-kapak.jpg" alt="English User Guide">
-      <h2>🇬🇧 English User Guide</h2>
+      <img src="https://img.youtube.com/vi/Ts8E5pzyhYI/hqdefault.jpg" alt="English User Guide">
+      <img class="flag" src="https://upload.wikimedia.org/wikipedia/en/a/a4/Flag_of_the_United_Kingdom.svg" alt="English Flag">
+      <p>English User Guide</p>
     </a>
   </div>
+
 </body>
 </html>

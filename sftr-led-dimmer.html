@@ -11,8 +11,14 @@
       line-height: 1.6;
       text-align: center;
     }
-    h1 {
-      margin-bottom: 30px;
+    .product-photo {
+      max-width: 500px;
+      margin: 0 auto 30px;
+    }
+    .product-photo img {
+      width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
     .container {
       display: flex;
@@ -43,8 +49,12 @@
   </style>
 </head>
 <body>
-  <h1>Kullanım Kılavuzları</h1>
-  
+
+  <!-- Ürün Fotoğrafı -->
+  <div class="product-photo">
+    <img src="sftr-led-dimmer-kapak.jpg" alt="Ürün Fotoğrafı">
+  </div>
+
   <div class="container">
     <!-- Türkçe Kullanım Kılavuzu -->
     <a class="card" href="https://www.youtube.com/playlist?list=PLxlT6Byl-RFZ_pdPkrpHCoQgz5rwOnPUk" target="_blank">

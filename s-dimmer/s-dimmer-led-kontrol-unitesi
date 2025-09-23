@@ -86,12 +86,12 @@
 <body>
 
   <!-- Sayfa başlığı -->
-  <h1>SFTR LED DIMMER</h1>
+  <h1>S DIMMER LED KONTROL ÜNİTESİ</h1>
 
   <div class="container">
     <!-- Türkçe Kullanım Kılavuzu -->
-    <a class="card" href="https://www.youtube.com/playlist?list=PLxlT6Byl-RFZ_pdPkrpHCoQgz5rwOnPUk" target="_blank">
-      <img class="preview" src="sftr-led-dimmer-kapak.jpg" alt="Türkçe Kullanım Kılavuzu">
+    <a class="card" href="https://www.youtube.com/playlist?list=PLxlT6Byl-RFZySTYgHitAhQELSWlmBclU" target="_blank">
+      <img class="preview" src="s-dimmer.png" alt="Türkçe Kullanım Kılavuzu">
       <div class="label">
         <img class="flag" src="https://flagcdn.com/w320/tr.png" alt="Türk Bayrağı">
         <span>Türkçe Kullanım Kılavuzu</span>
@@ -99,8 +99,8 @@
     </a>
 
     <!-- İngilizce Kullanım Kılavuzu -->
-    <a class="card" href="https://www.youtube.com/playlist?list=PLxlT6Byl-RFa5C0V70OBwMUIWXreWsSVV" target="_blank">
-      <img class="preview" src="sftr-led-dimmer-kapak.jpg" alt="English User Guide">
+    <a class="card" href="https://www.youtube.com/playlist?list=PLxlT6Byl-RFaEZYkBfxSG42icEy5IieGp" target="_blank">
+      <img class="preview" src="s-dimmer.png" alt="English User Guide">
       <div class="label">
         <img class="flag" src="https://flagcdn.com/w320/us.png" alt="US Flag">
         <span>English User Guide</span>

@@ -107,7 +107,6 @@
     function makeCard(p){
       const card = template.content.cloneNode(true).firstElementChild;
       card.querySelector('.title').textContent = p.title;
-      card.querySelector('.meta').textContent  = p.slug+"/index.html";
       card.querySelector('.link').href         = `/${p.slug+p.slug}.html`;
       if(p.image){
         const img = new Image();

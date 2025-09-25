@@ -7,121 +7,121 @@
   <style>
     :root{ --bg:#0a0f1a; --muted:#95a4c7; --text:#e9f0fb; --ok:#22c55e; --radius:18px; }
     *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0; font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial; color:var(--text);
-      background:
-        radial-gradient(1000px 700px at -10% -20%, #162445 0%, transparent 60%),
-        radial-gradient(900px 600px at 120% 0%, #1b2747 0%, transparent 55%),
-        var(--bg);
-    }
+    body{margin:0; font-family:sans-serif; color:var(--text);
+      background: radial-gradient(1000px 700px at -10% -20%, #162445 0%, transparent 60%),
+                  radial-gradient(900px 600px at 120% 0%, #1b2747 0%, transparent 55%),
+                  var(--bg);}
     .wrap{max-width:1100px; margin:0 auto; padding:24px}
-    h1.page-title{ text-align:center; font-size:clamp(28px,6vw,60px); font-weight:800; margin:0 0 24px; }
-    .grid{display:grid; grid-template-columns: repeat( auto-fill, minmax(240px,1fr) ); gap:14px}
+    h1.page-title{text-align:center; font-size:clamp(28px,6vw,60px); font-weight:800; margin:0 0 24px;}
+    .grid{display:grid; grid-template-columns: repeat(auto-fill,minmax(240px,1fr)); gap:14px}
     .card{position:relative; background:rgba(17,24,38,.6); border:1px solid #22314f; border-radius:var(--radius);
-      overflow:hidden; transition: transform .2s ease, box-shadow .2s ease}
-    .card:hover{transform: translateY(-2px); box-shadow:0 8px 30px rgba(0,0,0,.25)}
-    .cover{height:120px; background:linear-gradient(120deg, rgba(96,165,250,.18), rgba(124,58,237,.18));
-      display:flex; align-items:center; justify-content:center; position:relative}
-    .cover.has-img{background:none}
-    .cover img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
-    .icon{opacity:.9; z-index:1}
-    .img-badge{position:absolute; right:8px; bottom:8px; background:rgba(0,0,0,.55); color:#fff; padding:2px 6px; border-radius:8px; font-size:11px}
+      overflow:hidden; transition:.2s}
+    .card:hover{transform:translateY(-2px); box-shadow:0 8px 30px rgba(0,0,0,.25)}
+    .cover{height:120px; background:#22314f; display:flex; align-items:center; justify-content:center; position:relative}
+    .cover img{width:100%; height:100%; object-fit:cover}
+    .icon{opacity:.8}
     .body{padding:12px 14px}
-    .title{margin:0 0 6px 0; font-size:16px}
-    .desc{margin:0; color:var(--muted); font-size:13px; min-height:38px}
-    .meta{display:flex; gap:8px; align-items:center; margin-top:10px; font-size:12px; color:#a9bbda}
-    .dot{width:8px; height:8px; border-radius:999px; background:var(--ok)}
-    .path{opacity:.9}
+    .title{margin:0 0 6px; font-size:16px}
+    .desc{margin:0; color:var(--muted); font-size:13px}
+    .meta{font-size:12px; color:#a9bbda}
     .link{position:absolute; inset:0}
   </style>
 </head>
 <body>
   <div class="wrap">
     <h1 class="page-title">Kullanım Kılavuzları</h1>
-    <div id="grid" class="grid" aria-live="polite"></div>
+    <div id="grid" class="grid"></div>
   </div>
 
   <template id="cardTemplate">
     <article class="card">
-      <div class="cover">
-        <!-- yedek ikon -->
-        <svg class="icon" width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 3a6 6 0 0 0-6 6c0 2.22 1.2 4.15 3 5.2V18a3 3 0 0 0 3 3 3 3 0 0 0 3-3v-3.8c1.8-1.05 3-2.98 3-5.2a6 6 0 0 0-6-6Z" stroke="currentColor" stroke-width="1.2"/>
-          <path d="M9 11h6M8 14h8" stroke="currentColor" stroke-width="1.2"/>
-        </svg>
-      </div>
+      <div class="cover"></div>
       <div class="body">
-        <h3 class="title">Başlık</h3>
+        <h3 class="title"></h3>
         <p class="desc">Ürün sayfasına gitmek için tıklayın.</p>
-        <div class="meta"><span class="dot"></span><span class="path"></span></div>
+        <div class="meta"></div>
       </div>
-      <a class="link" target="_self" rel="noopener"></a>
+      <a class="link" target="_self"></a>
     </article>
   </template>
 
   <script>
+    // 📌 Burada image alanlarını kendi linklerinle dolduracaksın
     const PROJECTS = [
-      "12-24V-ac-kapat-led-kontrol-unitesi",
-      "cuppon-bioklimatik-pano",
-      "cuppon-tilt-pano",
-      "rgb-led-dimmer",
-      "s-bioklimatik-pano",
-      "s-dimmer",
-      "s-tilt-bioklimatik-pano",
-      "sftr-led-dimmer-multi",
-      "sftr-led-dimmer",
-      "tilt-piston-motor-kontrol-unitesi",
+      {
+        slug: "12-24V-ac-kapat-led-kontrol-unitesi",
+        title: "12-24V AC Kapat LED Kontrol Ünitesi",
+        image: "12-24V-ac-kapat-led-kontrol-unitesi/12-24V-ac-kapat-led-kontrol-unitesi.jpg"
+      },
+      {
+        slug: "cuppon-bioklimatik-pano",
+        title: "Cuppon Bioklimatik Pano",
+        image: "cuppon-bioklimatik-pano/cuppon-bioklimatik-pano.jpg"
+      },
+      {
+        slug: "cuppon-tilt-pano",
+        title: "Cuppon Tilt Pano",
+        image: "BURAYA-FOTOĞRAF-LİNKİ"
+      },
+      {
+        slug: "rgb-led-dimmer",
+        title: "RGB LED Dimmer",
+        image: "BURAYA-FOTOĞRAF-LİNKİ"
+      },
+      {
+        slug: "s-bioklimatik-pano",
+        title: "S Bioklimatik Pano",
+        image: "BURAYA-FOTOĞRAF-LİNKİ"
+      },
+      {
+        slug: "s-dimmer",
+        title: "S Dimmer",
+        image: "BURAYA-FOTOĞRAF-LİNKİ"
+      },
+      {
+        slug: "s-tilt-bioklimatik-pano",
+        title: "S Tilt Bioklimatik Pano",
+        image: "BURAYA-FOTOĞRAF-LİNKİ"
+      },
+      {
+        slug: "sftr-led-dimmer-multi",
+        title: "SFTR LED Dimmer Multi",
+        image: "BURAYA-FOTOĞRAF-LİNKİ"
+      },
+      {
+        slug: "sftr-led-dimmer",
+        title: "SFTR LED Dimmer",
+        image: "BURAYA-FOTOĞRAF-LİNKİ"
+      },
+      {
+        slug: "tilt-piston-motor-kontrol-unitesi",
+        title: "Tilt Piston Motor Kontrol Ünitesi",
+        image: "BURAYA-FOTOĞRAF-LİNKİ"
+      },
     ];
-    const grid = document.getElementById('grid');
-    const pretty = s => s.replace(/[-_]+/g,' ').replace(/\b\w/g, c=>c.toUpperCase());
 
-    function makeCard(slug){
-      const node = document.getElementById('cardTemplate').content.cloneNode(true);
-      const card = node.firstElementChild;
-      card.querySelector('.title').textContent = pretty(slug);
-      card.querySelector('.path').textContent  = `${slug}/index.html`;
-      card.querySelector('.link').href        = `/${slug}/index.html`;
-      setCover(card, slug);
+    const grid = document.getElementById('grid');
+    const template = document.getElementById('cardTemplate');
+
+    function makeCard(p){
+      const card = template.content.cloneNode(true).firstElementChild;
+      card.querySelector('.title').textContent = p.title;
+      card.querySelector('.meta').textContent  = p.slug+"/index.html";
+      card.querySelector('.link').href         = `/${p.slug}/index.html`;
+      if(p.image){
+        const img = new Image();
+        img.src = p.image;
+        img.alt = p.title;
+        img.loading = 'lazy';
+        card.querySelector('.cover').appendChild(img);
+      } else {
+        card.querySelector('.cover').innerHTML = '<svg class="icon" width="64" height="64" viewBox="0 0 24 24" fill="none"><path d="M12 3a6 6 0 0 0-6 6c0 2.22 1.2 4.15 3 5.2V18a3 3 0 0 0 3 3 3 3 0 0 0 3-3v-3.8c1.8-1.05 3-2.98 3-5.2a6 6 0 0 0-6-6Z" stroke="currentColor" stroke-width="1.2"/><path d="M9 11h6M8 14h8" stroke="currentColor" stroke-width="1.2"/></svg>';
+      }
       return card;
     }
 
-    function setCover(card, slug){
-      const cover = card.querySelector('.cover');
-      const names = ["cover","hero","main","thumbnail","thumb","kapak"];
-      const exts  = ["webp","jpg","jpeg","png","gif"];
-      const candidates = [];
-      for(const n of names){
-        for(const e of exts){
-          candidates.push(`/${slug}/${n}.${e}`);
-        }
-      }
-      const img = new Image();
-      img.loading = 'lazy';
-      img.alt = 'Kapak';
-      let i = 0;
-      const tryNext = ()=>{
-        if(i >= candidates.length) return;
-        img.src = candidates[i++];
-      };
-      img.onload = ()=>{
-        cover.classList.add('has-img');
-        cover.innerHTML = '';
-        cover.appendChild(img);
-        const b = document.createElement('span');
-        b.className = 'img-badge';
-        b.textContent = img.src.split('/').pop();
-        cover.appendChild(b);
-      };
-      img.onerror = ()=>{ tryNext(); };
-      tryNext();
-    }
-
     function bootstrap(){
-      grid.innerHTML = '';
-      for(const slug of PROJECTS){
-        grid.appendChild(makeCard(slug));
-      }
+      PROJECTS.forEach(p => grid.appendChild(makeCard(p)));
     }
     bootstrap();
   </script>

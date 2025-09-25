@@ -39,13 +39,23 @@
       display:flex; align-items:center; gap:8px; justify-content:space-between;
       z-index:2; /* link overlay'in üstünde */
     }
-    .copy-btn{
-      background:none; border:1px solid #2a3a5f; color:var(--muted);
-      cursor:pointer; font-size:12px; padding:4px 8px; border-radius:8px;
-      transition: color .2s, border-color .2s, background-color .2s;
-      position:relative; z-index:2; /* link overlay'in üstünde */
-    }
-    .copy-btn:hover{ color:var(--text); border-color:#3a4e7a; background:rgba(255,255,255,.06); }
+.copy-btn{
+  background-color: #1A7ECA;   /* 🔵 mavi arka plan */
+  border: none;
+  color: #fff;                 /* ikon/beyaz yazı */
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  padding: 6px 10px;           /* içine biraz boşluk */
+  border-radius: 6px;          /* köşeler yumuşak */
+  transition: background-color .2s, transform .2s;
+  position: relative;
+  z-index: 2;
+}
+.copy-btn:hover{
+  background-color: #1669a7;   /* hover için biraz koyu tonu */
+  transform: scale(1.1);
+}
   </style>
 </head>
 <body>

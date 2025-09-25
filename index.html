@@ -1,37 +1,28 @@
-
 <!DOCTYPE html>
 <html lang="tr">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>LedMuse • Ürün Siteleri Ana Sayfa</title>
-  <meta name="description" content="ledmuse.github.io deposundaki 10 ürün web sayfasını bir ana sayfada toplayan bağlantı panosu." />
+  <title>Kullanım Kılavuzları</title>
+  <meta name="description" content="ledmuse.github.io deposundaki kullanım kılavuzlarını bir ana sayfada listeler." />
   <style>
-    :root{
-      --bg:#0a0f1a; --panel:#0f1729; --muted:#95a4c7; --text:#e9f0fb; --brand:#60a5fa; --accent:#7c3aed; --ring:#1e293b;
-      --ok:#22c55e; --warn:#f59e0b; --err:#ef4444; --radius:18px;
-    }
+    :root{ --bg:#0a0f1a; --panel:#0f1729; --muted:#95a4c7; --text:#e9f0fb; --ok:#22c55e; --radius:18px; }
+    *{box-sizing:border-box}
     html,body{height:100%}
     body{margin:0; font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial; color:var(--text);
       background: radial-gradient(1000px 700px at -10% -20%, #162445 0%, transparent 60%),
                   radial-gradient(900px 600px at 120% 0%, #1b2747 0%, transparent 55%),
-                  var(--bg);}
+                  var(--bg);}    
     .wrap{max-width:1100px; margin:0 auto; padding:24px}
-    header{display:grid; gap:10px; grid-template-columns:1fr auto; align-items:center}
-    .brand{font-size: clamp(24px,3.5vw,36px); margin:0}
-    .sub{margin:0; color:var(--muted)}
-    .badge{font-size:12px; color:#cfe3ff; background:#0e1726; border:1px solid #233454; padding:4px 8px; border-radius:999px}
 
-    .toolbar{display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin:18px 0}
-    .input{flex:1 1 240px; min-width:220px; background:var(--panel); color:var(--text); border:1px solid #22314f; border-radius:12px; padding:10px 12px; outline:none}
-    .input::placeholder{color:#6f86a7}
-    .select,.btn{background:var(--panel); color:var(--text); border:1px solid #22314f; border-radius:12px; padding:10px 12px}
-    .btn.primary{background:linear-gradient(180deg,#3b82f6,#1e40af); border:none; color:white; font-weight:600}
+    /* Üst başlık */
+    h1.page-title{ text-align:center; font-size:clamp(28px,6vw,60px); font-weight:800; letter-spacing:.2px; margin:0 0 24px; }
 
+    /* Kart ızgarası */
     .grid{display:grid; grid-template-columns: repeat( auto-fill, minmax(240px,1fr) ); gap:14px}
     .card{position:relative; background:rgba(17,24,38,.6); border:1px solid #22314f; border-radius:var(--radius); overflow:hidden; transition: transform .2s ease, box-shadow .2s ease}
     .card:hover{transform: translateY(-2px); box-shadow:0 8px 30px rgba(0,0,0,.25)}
-    .cover{height:140px; background:linear-gradient(120deg, rgba(96,165,250,.18), rgba(124,58,237,.18)); display:flex; align-items:center; justify-content:center; position:relative}
+    .cover{height:120px; background:linear-gradient(120deg, rgba(96,165,250,.18), rgba(124,58,237,.18)); display:flex; align-items:center; justify-content:center; position:relative}
     .cover.has-img{background:none}
     .cover img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
     .icon{opacity:.9; z-index:1}
@@ -41,34 +32,17 @@
     .desc{margin:0; color:var(--muted); font-size:13px; min-height:38px}
     .meta{display:flex; gap:8px; align-items:center; margin-top:10px; font-size:12px; color:#a9bbda}
     .dot{width:8px; height:8px; border-radius:999px; background:var(--ok)}
+    .path{opacity:.9}
     .link{position:absolute; inset:0}
-    footer{margin-top:20px; color:var(--muted); font-size:12px}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <header>
-      <div>
-        <div class="badge">GitHub Pages • ledmuse.github.io</div>
-        <h1 class="brand">Ürün Siteleri Ana Sayfa</h1>
-        <p class="sub">Kartlar başlık/açıklamayı alt siteden çeker, kapakta uygun görseli gösterir.</p>
-      </div>
-      <button id="refresh" class="btn primary">Yenile</button>
-    </header>
+    <!-- İSTENEN: sadece bu başlık kalsın -->
+    <h1 class="page-title">Kullanım Kılavuzları</h1>
 
-    <div class="toolbar">
-      <input id="search" class="input" placeholder="Ara: ürün adı / anahtar kelime" />
-      <select id="sort" class="select" title="Sırala">
-        <option value="name">Ada göre</option>
-        <option value="path">Yola göre</option>
-      </select>
-    </div>
-
+    <!-- Kartlar -->
     <div id="grid" class="grid" aria-live="polite"></div>
-
-    <footer>
-      Görsel önceliği: <code>og:image</code> &gt; <code>cover/hero/main/thumbnail/thumb/kapak.*</code> &gt; klasördeki ilk görsel.
-    </footer>
   </div>
 
   <template id="cardTemplate">
@@ -90,29 +64,15 @@
   </template>
 
   <script>
-    // ==== Yapılandırma ====
+    // ===== Yapılandırma (artık klasör adları otomatik bulunur) =====
     const OWNER = "ledmuse";
     const REPO  = "ledmuse.github.io";
-
-    // Depodaki 10 ürün klasörü
-    const PROJECTS = [
-      { slug: "12-24V-ac-kapat-led-kontrol-unitesi", label: "12–24V AC Kapat LED Kontrol Ünitesi" },
-      { slug: "cuppon-bioklimatik-pano",             label: "Cuppon Biyoklimatik Pano" },
-      { slug: "cuppon-tilt-pano",                    label: "Cuppon Tilt Pano" },
-      { slug: "rgb-led-dimmer",                      label: "RGB LED Dimmer" },
-      { slug: "s-bioklimatik-pano",                  label: "S Biyoklimatik Pano" },
-      { slug: "s-dimmer",                            label: "S Dimmer" },
-      { slug: "s-tilt-bioklimatik-pano",             label: "S Tilt Biyoklimatik Pano" },
-      { slug: "sftr-led-dimmer-multi",               label: "SFTR LED Dimmer Multi" },
-      { slug: "sftr-led-dimmer",                     label: "SFTR LED Dimmer" },
-      { slug: "tilt-piston-motor-kontrol-unitesi",   label: "Tilt Piston Motor Kontrol Ünitesi" },
-    ];
 
     const $ = (s) => document.querySelector(s);
     const grid = $("#grid");
 
     function makeCard(){
-      const node = document.importNode(document.querySelector('#cardTemplate').content, true);
+      const node = document.importNode($("#cardTemplate").content, true);
       return node.firstElementChild;
     }
 
@@ -156,27 +116,33 @@
     }
 
     async function getRepoTree(branch){
-      // Kök ağacı recursive olarak al
+      // Tek istekte tüm ağaç (daha az hata, daha az rate limit)
       const tree = await fetchJSON(`https://api.github.com/repos/${OWNER}/${REPO}/git/trees/${encodeURIComponent(branch)}?recursive=1`);
       return tree.tree || [];
+    }
+
+    function findSlugsWithHtml(tree){
+      // slug = path'in ilk bölümü; altında en az bir .html olan klasörler
+      const htmlBlobs = tree.filter(t => t.type === 'blob' && /\.html?$/i.test(t.path) && t.path.includes('/'));
+      const slugs = Array.from(new Set(htmlBlobs.map(t => t.path.split('/')[0])));
+      return slugs;
     }
 
     function pickHtmlForFolder(tree, slug){
       const under = tree.filter(t => t.type === 'blob' && t.path.startsWith(slug + '/') && /\.html?$/i.test(t.path));
       if(!under.length) return null;
-      // slug/index.html varsa onu al, yoksa slug/ altındaki ilk html
-      const idx = under.find(x => x.path.toLowerCase() === `${slug}/index.html`);
-      return (idx || under[0]).path.replace(slug + '/', ''); // dosya adı veya alt yol
+      const pref = under.find(x => x.path.toLowerCase() === `${slug}/index.html`);
+      const byDepth = (a,b)=> (a.path.split('/').length - b.path.split('/').length) || a.path.localeCompare(b.path);
+      const chosen = pref || under.sort(byDepth)[0];
+      return chosen.path.replace(slug + '/', ''); // dosya adı veya alt yol
     }
 
     function pickImageForFolder(tree, slug){
       const isImg = (p)=>/\.(png|jpe?g|webp|gif|avif|svg)$/i.test(p);
       const files = tree.filter(t => t.type === 'blob' && t.path.startsWith(slug + '/') && isImg(t.path));
       if(!files.length) return null;
-      // tercih sırası: cover, hero, main, thumbnail, thumb, kapak
       const pref = /(cover|hero|main|thumbnail|thumb|kapak)\.(png|jpe?g|webp|gif|avif|svg)$/i;
       const hit = files.find(f => pref.test(f.path.split('/').pop()));
-      // yoksa en sığ derinlikteki ilk görsel
       const byDepth = (a,b)=> (a.path.split('/').length - b.path.split('/').length) || a.path.localeCompare(b.path);
       const chosen = hit || files.sort(byDepth)[0];
       return chosen.path.replace(slug + '/', '');
@@ -185,6 +151,7 @@
     async function resolveMetaFromHtml(href){
       try{
         const res = await fetch(href, { mode: 'same-origin' });
+        if(!res.ok) throw new Error('page not ok');
         const html = await res.text();
         const doc  = new DOMParser().parseFromString(html, 'text/html');
         const title = (doc.querySelector('title')?.textContent || '').trim();
@@ -194,202 +161,50 @@
       }catch(_){ return { title:'', desc:'', og:'' }; }
     }
 
-    function applySearchAndSort(){
-      const q = $("#search").value.trim().toLowerCase();
-      const mode = $("#sort").value;
-      const cards = Array.from(grid.children);
-      for(const el of cards){
-        const name = el.dataset.name || '';
-        const path = el.dataset.path || '';
-        el.style.display = (!q || name.includes(q) || path.includes(q)) ? '' : 'none';
-      }
-      const visible = cards.filter(c => c.style.display !== 'none');
-      visible.sort((a,b)=>{
-        if(mode === 'path') return a.dataset.path.localeCompare(b.dataset.path);
-        return a.dataset.name.localeCompare(b.dataset.name);
-      }).forEach(el => grid.appendChild(el));
+    function prettyLabelFromSlug(slug){
+      return slug.replace(/[-_]+/g,' ').replace(/\b\w/g, c=>c.toUpperCase());
     }
 
     async function bootstrap(){
       grid.innerHTML = '';
-      const branch = await getDefaultBranch();
-      const tree = await getRepoTree(branch);
+      try{
+        const branch = await getDefaultBranch();
+        const tree = await getRepoTree(branch);
+        const slugs = findSlugsWithHtml(tree);
+        if(!slugs.length){
+          grid.innerHTML = '<p style="opacity:.8">Klasörlerin altında .html dosyası bulunamadı.</p>'; return;
+        }
+        for(const slug of slugs){
+          const card = makeCard();
+          grid.appendChild(card);
+          setCard(card, { title: prettyLabelFromSlug(slug), desc: 'Yükleniyor…', href: `/${slug}/`, path: slug + '/' });
 
-      for(const p of PROJECTS){
-        const card = makeCard();
-        card.dataset.name = p.label.toLowerCase();
-        card.dataset.path = p.slug;
-        grid.appendChild(card);
-        setCard(card, { title: p.label, desc: 'Yükleniyor…', href: '#', path: p.slug });
-
-        try{
-          const htmlRel = pickHtmlForFolder(tree, p.slug); // örn: index.html veya alt/yol.html
-          const pageHref = htmlRel ? `/${p.slug}/${htmlRel.toLowerCase()==='index.html' ? '' : htmlRel}` : `/${p.slug}/`;
+          // Hedef sayfa ve meta
+          const htmlRel = pickHtmlForFolder(tree, slug);
+          const pageHref = htmlRel ? `/${slug}/${htmlRel.toLowerCase()==='index.html' ? '' : htmlRel}` : `/${slug}/`;
           const meta = await resolveMetaFromHtml(pageHref);
 
-          // Görsel öncelik: og:image → klasörden seçilen görsel → yoksa ikon
-          let imgRel = pickImageForFolder(tree, p.slug);
+          // Görsel öncelik: og:image → klasörden görsel → yoksa ikon
+          let imgRel = pickImageForFolder(tree, slug);
           let imgUrl = null;
-          if(meta.og){
-            imgUrl = meta.og.startsWith('http') ? meta.og : `/${p.slug}/${meta.og.replace(/^\\/?/, '')}`;
-          } else if(imgRel){
-            imgUrl = `/${p.slug}/${imgRel}`;
-          }
+          if(meta.og){ imgUrl = meta.og.startsWith('http') ? meta.og : `/${slug}/${meta.og.replace(/^\/?/, '')}`; }
+          else if(imgRel){ imgUrl = `/${slug}/${imgRel}`; }
 
           setCard(card, {
-            title: meta.title || p.label,
+            title: meta.title || prettyLabelFromSlug(slug),
             desc: meta.desc || 'Ürün sayfasına gitmek için tıklayın.',
             href: pageHref,
-            path: htmlRel ? `${p.slug}/${htmlRel}` : `${p.slug}/`,
+            path: htmlRel ? `${slug}/${htmlRel}` : `${slug}/`,
             image: imgUrl
           });
-        }catch(err){
-          console.error(p.slug, err);
-          setCard(card, { title: p.label, desc: 'İçerik okunamadı', href: `/${p.slug}/`, path: `${p.slug}/` });
         }
+      }catch(err){
+        console.error(err);
+        grid.innerHTML = `<p style="opacity:.85">Bir hata oluştu: ${err.message.replace(/[<>]/g,'')}<br>Depo herkese açık olmalı ve GitHub API oran sınırı aşılmamalıdır.</p>`;
       }
-      applySearchAndSort();
     }
-
-    $("#refresh").addEventListener('click', bootstrap);
-    $("#search").addEventListener('input', applySearchAndSort);
-    $("#sort").addEventListener('change', applySearchAndSort);
 
     bootstrap();
   </script>
 </body>
 </html>
-İşleyiş özeti:
-
-OG görseli varsa onu kullanır (haricî URL ise direkt, göreli ise klasöre göre birleştirir).
-
-OG yoksa, klasördeki dosyalar arasından adı cover/hero/main/thumbnail/thumb/kapak olanı önceler; yoksa ilk bulunan görseli alır.
-
-Görsel bulunamazsa ikon gösterilir.
-
-Bunu koyduktan sonra bir şey eksik kalırsa (ör. bazı klasörlerde görseller alt klasördeyse ya da farklı adlandırıldıysa) söyle; tercih listesine yeni anahtar kelimeler ekleyebilirim veya belirli dosya adlarını sabitleyebiliriz.
-
-Şunu dedin:
-sitenin üst kısmındaki herşeyi kaldırıp sadece kullanım klavuzları yazısı koyar mısın yazı sayfaya uyumlu ve güzel gözüksün
-ChatGPT:
-Üstteki tüm öğeleri kaldırdım ve sayfaya sadece ortalanmış, uyumlu görünecek “Kullanım Kılavuzları” başlığını ekledim.
-
-Şunu dedin:
-kodun son halini verir misin
-ChatGPT:
-Elbette — güncel son hâli aşağıda:
-
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Kullanım Kılavuzları</title>
-  <style>
-    :root{
-      --bg:#0a0f1a; --text:#e9f0fb;
-    }
-    body{
-      margin:0;
-      font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial;
-      color:var(--text);
-      background:
-        radial-gradient(1000px 700px at -10% -20%, #162445 0%, transparent 60%),
-        radial-gradient(900px 600px at 120% 0%, #1b2747 0%, transparent 55%),
-        var(--bg);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      height:100vh;
-      text-align:center;
-    }
-    h1{
-      font-size:clamp(28px,6vw,60px);
-      font-weight:700;
-      margin:0;
-    }
-  </style>
-</head>
-<body>
-  <h1>Kullanım Kılavuzları</h1>
-</body>
-</html>
-Şunu dedin:
-sen beni yanlış anladın 10 adet olan içerikler kalsın ancak sayfanın üst kısmındaki github pages, ürün siteleri anasayfa gibi yazıların hepsini kaldır ve kullanım klavuzları yazısını koy
-ChatGPT:
-Ledmuse.github.io Için Otomatik Dizinli Index
-· html
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Kullanım Kılavuzları</title>
-  <meta name="description" content="ledmuse.github.io deposundaki 10 ürün web sayfasını bir ana sayfada toplayan bağlantı panosu." />
-  <style>
-    :root{
-      --bg:#0a0f1a; --panel:#0f1729; --muted:#95a4c7; --text:#e9f0fb; --ok:#22c55e; --radius:18px;
-    }
-    html,body{height:100%}
-    body{margin:0; font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial; color:var(--text);
-      background: radial-gradient(1000px 700px at -10% -20%, #162445 0%, transparent 60%),
-                  radial-gradient(900px 600px at 120% 0%, #1b2747 0%, transparent 55%),
-                  var(--bg);}
-    .wrap{max-width:1100px; margin:0 auto; padding:24px}
-
-    h1.page-title{text-align:center; font-size:clamp(28px,6vw,60px); font-weight:700; margin:0 0 24px;}
-
-    .grid{display:grid; grid-template-columns: repeat( auto-fill, minmax(240px,1fr) ); gap:14px}
-    .card{position:relative; background:rgba(17,24,38,.6); border:1px solid #22314f; border-radius:var(--radius); overflow:hidden; transition: transform .2s ease, box-shadow .2s ease}
-    .card:hover{transform: translateY(-2px); box-shadow:0 8px 30px rgba(0,0,0,.25)}
-    .cover{height:120px; background:linear-gradient(120deg, rgba(96,165,250,.18), rgba(124,58,237,.18)); display:flex; align-items:center; justify-content:center}
-    .icon{opacity:.9}
-    .body{padding:12px 14px}
-    .title{margin:0 0 6px 0; font-size:16px}
-    .desc{margin:0; color:var(--muted); font-size:13px; min-height:38px}
-    .meta{display:flex; gap:8px; align-items:center; margin-top:10px; font-size:12px; color:#a9bbda}
-    .dot{width:8px; height:8px; border-radius:999px; background:var(--ok)}
-    .link{position:absolute; inset:0}
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <h1 class="page-title">Kullanım Kılavuzları</h1>
-
-    <div id="grid" class="grid" aria-live="polite"></div>
-  </div>
-
-  <template id="cardTemplate">
-    <article class="card">
-      <div class="cover">
-        <!-- basit LED simgesi -->
-        <svg class="icon" width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 3a6 6 0 0 0-6 6c0 2.22 1.2 4.15 3 5.2V18a3 3 0 0 0 3 3 3 3 0 0 0 3-3v-3.8c1.8-1.05 3-2.98 3-5.2a6 6 0 0 0-6-6Z" stroke="currentColor" stroke-width="1.2"/>
-          <path d="M9 11h6M8 14h8" stroke="currentColor" stroke-width="1.2"/>
-        </svg>
-      </div>
-      <div class="body">
-        <h3 class="title">Başlık yükleniyor…</h3>
-        <p class="desc">Açıklama aranıyor…</p>
-        <div class="meta"><span class="dot"></span><span class="path"></span></div>
-      </div>
-      <a class="link" target="_self" rel="noopener"></a>
-    </article>
-  </template>
-
-  <script>
-    const OWNER = "ledmuse";
-    const REPO  = "ledmuse.github.io";
-
-    const PROJECTS = [
-      { slug: "12-24V-ac-kapat-led-kontrol-unitesi", label: "12–24V AC Kapat LED Kontrol Ünitesi" },
-      { slug: "cuppon-bioklimatik-pano",             label: "Cuppon Biyoklimatik Pano" },
-      { slug: "cuppon-tilt-pano",                    label: "Cuppon Tilt Pano" },
-      { slug: "rgb-led-dimmer",                      label: "RGB LED Dimmer" },
-İstediğin gibi üstteki tüm yazıları kaldırıp sadece ortada “Kullanım Kılavuzları” başlığını bıraktım. Alt kısımda ise 10 ürün kartı listelenmeye devam ediyor.
-
-
-
-
-Dosya seçilmediDosya seçilmedi
-ChatGPT hata yapabilir. Önemli bilgileri kontrol edin.

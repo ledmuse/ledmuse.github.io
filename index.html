@@ -17,14 +17,7 @@
         var(--bg);
     }
     .wrap{max-width:1100px; margin:0 auto; padding:24px}
-
-    /* Üst başlık (sadece bu kalsın) */
-    h1.page-title{
-      text-align:center; font-size:clamp(28px,6vw,60px);
-      font-weight:800; letter-spacing:.2px; margin:0 0 24px;
-    }
-
-    /* Kart ızgarası */
+    h1.page-title{ text-align:center; font-size:clamp(28px,6vw,60px); font-weight:800; margin:0 0 24px; }
     .grid{display:grid; grid-template-columns: repeat( auto-fill, minmax(240px,1fr) ); gap:14px}
     .card{position:relative; background:rgba(17,24,38,.6); border:1px solid #22314f; border-radius:var(--radius);
       overflow:hidden; transition: transform .2s ease, box-shadow .2s ease}
@@ -47,15 +40,12 @@
 </head>
 <body>
   <div class="wrap">
-    <!-- Üstte sadece bu başlık -->
     <h1 class="page-title">Kullanım Kılavuzları</h1>
-
-    <!-- Kartlar -->
     <div id="grid" class="grid" aria-live="polite"></div>
   </div>
 
   <template id="cardTemplate">
-    <article class="card">
+    <article class="card" data-slug="">
       <div class="cover">
         <!-- yedek ikon -->
         <svg class="icon" width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -64,8 +54,8 @@
         </svg>
       </div>
       <div class="body">
-        <h3 class="title">Başlık yükleniyor…</h3>
-        <p class="desc">Açıklama aranıyor…</p>
+        <h3 class="title">Yükleniyor…</h3>
+        <p class="desc">…</p>
         <div class="meta"><span class="dot"></span><span class="path"></span></div>
       </div>
       <a class="link" target="_self" rel="noopener"></a>
@@ -73,7 +63,7 @@
   </template>
 
   <script>
-    // API YOK → Rate limit yok. 10 klasör sabit.
+    // Sabit klasör listesi → en hızlı yol
     const PROJECTS = [
       "12-24V-ac-kapat-led-kontrol-unitesi",
       "cuppon-bioklimatik-pano",
@@ -86,79 +76,163 @@
       "sftr-led-dimmer",
       "tilt-piston-motor-kontrol-unitesi",
     ];
-
     const grid = document.getElementById('grid');
+    const TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 gün cache
 
-    function makeCard(){
-      const node = document.importNode(document.getElementById('cardTemplate').content, true);
-      return node.firstElementChild;
+    // Küçük yardımcılar
+    const pretty = s => s.replace(/[-_]+/g,' ').replace(/\b\w/g, c=>c.toUpperCase());
+    const cacheGet = (k) => {
+      try { const j = JSON.parse(localStorage.getItem(k) || 'null');
+            if(!j) return null;
+            if(Date.now() - j.t > TTL_MS) { localStorage.removeItem(k); return null; }
+            return j.v;
+      } catch(_) { return null; }
+    };
+    const cacheSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify({t:Date.now(), v})); } catch(_){} };
+
+    // Ağ isteklerini sınırla (eşzamanlı 3)
+    function pLimit(n){
+      const q=[]; let active=0;
+      const next=()=>{ if(!q.length || active>=n) return; active++; const {fn,resolve,reject}=q.shift();
+        fn().then(resolve,reject).finally(()=>{active--; next();});
+      };
+      return (fn)=> new Promise((resolve,reject)=>{ q.push({fn,resolve,reject}); next(); });
     }
-    function fallbackIcon(){
-      return `
-        <svg class="icon" width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 3a6 6 0 0 0-6 6c0 2.22 1.2 4.15 3 5.2V18a3 3 0 0 0 3 3 3 3 0 0 0 3-3v-3.8c1.8-1.05 3-2.98 3-5.2a6 6 0 0 0-6-6Z" stroke="currentColor" stroke-width="1.2"/>
-          <path d="M9 11h6M8 14h8" stroke="currentColor" stroke-width="1.2"/>
-        </svg>`;
+    const limit = pLimit(3);
+
+    async function fetchText(url, timeout=8000){
+      const ctrl = new AbortController(); const id = setTimeout(()=>ctrl.abort(), timeout);
+      try{
+        const r = await fetch(url, { mode:'same-origin', signal: ctrl.signal });
+        if(!r.ok) throw 0;
+        return await r.text();
+      }catch(_){ return null; } finally{ clearTimeout(id); }
     }
-    function setCard(card, {title, desc, href, path, image}){
-      card.querySelector('.title').textContent = title || 'Başlık bulunamadı';
-      card.querySelector('.desc').textContent  = desc || '';
-      card.querySelector('.path').textContent  = path || '';
-      card.querySelector('.link').href = href || '#';
-      const cover = card.querySelector('.cover');
-      if(image){
-        cover.classList.add('has-img'); cover.innerHTML = '';
-        const img = new Image(); img.loading = 'lazy'; img.alt = title || 'Kapak görseli'; img.src = image;
-        img.onerror = ()=>{ cover.classList.remove('has-img'); cover.innerHTML = fallbackIcon(); };
-        cover.appendChild(img);
-        const b = document.createElement('span'); b.className = 'img-badge'; b.textContent = image.split('/').pop(); cover.appendChild(b);
-      } else { cover.classList.remove('has-img'); cover.innerHTML = fallbackIcon(); }
+    async function headOk(url, timeout=5000){
+      const ctrl = new AbortController(); const id = setTimeout(()=>ctrl.abort(), timeout);
+      try{
+        const r = await fetch(url, { method:'HEAD', mode:'same-origin', signal: ctrl.signal });
+        return r.ok;
+      }catch(_){ return false; } finally{ clearTimeout(id); }
     }
-    async function fetchText(url){
-      try{ const r = await fetch(url, { mode: 'same-origin' }); if(!r.ok) throw 0; return await r.text(); }catch(_){ return null; }
-    }
-    async function firstWorkingPage(slug){
-      const candidates = [`/${slug}/`, `/${slug}/index.html`, `/${slug}/home.html`, `/${slug}/default.html`, `/${slug}/${slug}.html`];
-      for(const href of candidates){ const html = await fetchText(href); if(html){ return { href, html }; } }
-      return { href: `/${slug}/`, html: null };
-    }
-    function parseMetaFromHtml(html){
+
+    function parseMeta(html){
       if(!html) return { title:'', desc:'', og:'' };
       const doc = new DOMParser().parseFromString(html, 'text/html');
       const title = (doc.querySelector('title')?.textContent || '').trim();
-      const desc  = (doc.querySelector('meta[name="description"]')?.getAttribute('content') || doc.querySelector('h1')?.textContent || '').trim();
+      const desc  = (doc.querySelector('meta[name="description"]')?.getAttribute('content') ||
+                     doc.querySelector('h1')?.textContent || '').trim();
       const og    = (doc.querySelector('meta[property="og:image"]')?.getAttribute('content') || '').trim();
       return { title, desc, og };
     }
-    function imageExists(url){ return new Promise(res=>{ const i=new Image(); i.onload=()=>res(true); i.onerror=()=>res(false); i.src=url; }); }
-    async function resolveImage(slug, og){
-      if(og){ const url = og.startsWith('http') ? og : `/${slug}/${og.replace(/^\//, '')}`; if(await imageExists(url)) return url; }
-      const names = ['cover','hero','main','thumbnail','thumb','kapak'], exts  = ['webp','jpg','jpeg','png','gif','avif','svg'];
-      for(const n of names){ for(const e of exts){ const u = `/${slug}/${n}.${e}`; if(await imageExists(u)) return u; } }
+
+    async function findPage(slug){
+      // Önce index.html; 404 ise klasör kökü
+      const idx = `/${slug}/index.html`;
+      const html = await fetchText(idx);
+      if(html) return { href: (idx), html };
+      const root = `/${slug}/`;
+      return { href: root, html: await fetchText(root) };
+    }
+
+    async function findCover(slug, og){
+      // 1) og:image (göreliyse tamamla), hızlı kontrol
+      if(og){
+        const url = og.startsWith('http') ? og : `/${slug}/${og.replace(/^\\/?/, '')}`;
+        if(await headOk(url) || await imgExists(url)) return url;
+      }
+      // 2) Kısa liste: cover.webp → cover.jpg → cover.png
+      const candidates = [`/${slug}/cover.webp`, `/${slug}/cover.jpg`, `/${slug}/cover.png`];
+      for(const u of candidates){
+        if(await headOk(u) || await imgExists(u)) return u;
+      }
       return null;
     }
-    function labelFromSlug(slug){ return slug.replace(/[-_]+/g,' ').replace(/\b\w/g, c=>c.toUpperCase()); }
 
-    async function bootstrap(){
-      grid.innerHTML = '';
+    function imgExists(url){
+      return new Promise(res=>{
+        const i=new Image(); i.onload=()=>res(true); i.onerror=()=>res(false); i.src=url;
+      });
+    }
+
+    function makeCard(slug){
+      const card = document.importNode(document.getElementById('cardTemplate').content, true).firstElementChild;
+      card.dataset.slug = slug;
+      card.querySelector('.title').textContent = pretty(slug);
+      card.querySelector('.desc').textContent  = 'Yükleniyor…';
+      card.querySelector('.path').textContent  = slug+'/';
+      card.querySelector('.link').href = `/${slug}/`;
+      return card;
+    }
+
+    function setCover(card, url){
+      const cover = card.querySelector('.cover');
+      if(!url){ cover.classList.remove('has-img'); return; }
+      cover.classList.add('has-img'); cover.innerHTML = '';
+      const img = new Image(); img.loading='lazy'; img.alt='Kapak'; img.src=url;
+      img.onerror = ()=>{ cover.classList.remove('has-img'); cover.innerHTML = coverFallback; };
+      cover.appendChild(img);
+      const b = document.createElement('span'); b.className='img-badge'; b.textContent = url.split('/').pop();
+      cover.appendChild(b);
+    }
+    const coverFallback = `
+      <svg class="icon" width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 3a6 6 0 0 0-6 6c0 2.22 1.2 4.15 3 5.2V18a3 3 0 0 0 3 3 3 3 0 0 0 3-3v-3.8c1.8-1.05 3-2.98 3-5.2a6 6 0 0 0-6-6Z" stroke="currentColor" stroke-width="1.2"/>
+        <path d="M9 11h6M8 14h8" stroke="currentColor" stroke-width="1.2"/>
+      </svg>`;
+
+    // Sadece görünürdeki kartları yükle
+    const io = new IntersectionObserver((entries)=>{
+      for(const e of entries){
+        if(!e.isIntersecting) continue;
+        const card = e.target;
+        io.unobserve(card);
+        hydrate(card);
+      }
+    }, { rootMargin: '200px 0px' });
+
+    async function hydrate(card){
+      const slug = card.dataset.slug;
+      const ck = 'meta:'+slug;
+      const cached = cacheGet(ck);
+      if(cached){
+        card.querySelector('.title').textContent = cached.title || pretty(slug);
+        card.querySelector('.desc').textContent  = cached.desc || 'Ürün sayfasına gitmek için tıklayın.';
+        card.querySelector('.path').textContent  = cached.path || `${slug}/index.html`;
+        card.querySelector('.link').href        = cached.href || `/${slug}/`;
+        setCover(card, cached.image || null);
+        return;
+      }
+
+      // Ağ isteklerini sınırla
+      const { href, html } = await limit(()=>findPage(slug));
+      const meta = parseMeta(html);
+      const image = await limit(()=>findCover(slug, meta.og));
+
+      const data = {
+        title: meta.title || pretty(slug),
+        desc:  meta.desc  || 'Ürün sayfasına gitmek için tıklayın.',
+        path:  href.replace(/^\//,''),
+        href,  image
+      };
+      cacheSet(ck, data);
+
+      card.querySelector('.title').textContent = data.title;
+      card.querySelector('.desc').textContent  = data.desc;
+      card.querySelector('.path').textContent  = data.path;
+      card.querySelector('.link').href        = data.href;
+      setCover(card, data.image || null);
+    }
+
+    function bootstrap(){
       for(const slug of PROJECTS){
-        const card = makeCard(); grid.appendChild(card);
-        setCard(card, { title: labelFromSlug(slug), desc: 'Yükleniyor…', href: `/${slug}/`, path: slug + '/' });
-
-        const { href, html } = await firstWorkingPage(slug);
-        const meta = parseMetaFromHtml(html);
-        const img  = await resolveImage(slug, meta.og);
-
-        setCard(card, {
-          title: meta.title || labelFromSlug(slug),
-          desc: meta.desc || 'Ürün sayfasına gitmek için tıklayın.',
-          href,
-          path: href.replace(/^\//,''),
-          image: img
-        });
+        const card = makeCard(slug);
+        grid.appendChild(card);
+        io.observe(card);
       }
     }
     bootstrap();
   </script>
 </body>
 </html>
+

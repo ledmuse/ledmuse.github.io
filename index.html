@@ -61,7 +61,6 @@
   </template>
 
   <script>
-    // Sabit klasör listesi → net ve hızlı
     const PROJECTS = [
       "12-24V-ac-kapat-led-kontrol-unitesi",
       "cuppon-bioklimatik-pano",
@@ -75,7 +74,6 @@
       "tilt-piston-motor-kontrol-unitesi",
     ];
     const grid = document.getElementById('grid');
-
     const pretty = s => s.replace(/[-_]+/g,' ').replace(/\b\w/g, c=>c.toUpperCase());
 
     function makeCard(slug){
@@ -84,19 +82,23 @@
       card.querySelector('.title').textContent = pretty(slug);
       card.querySelector('.path').textContent  = `${slug}/index.html`;
       card.querySelector('.link').href        = `/${slug}/index.html`;
-      // kapak: cover.webp → cover.jpg → cover.png
       setCover(card, slug);
       return card;
     }
 
     function setCover(card, slug){
       const cover = card.querySelector('.cover');
-      const candidates = [`/${slug}/cover.webp`, `/${slug}/cover.jpg`, `/${slug}/cover.png`];
+      const names = ["cover","hero","main","thumbnail","thumb","kapak"];
+      const exts  = ["webp","jpg","jpeg","png","gif"];
+      const candidates = [];
+      for(const n of names){
+        for(const e of exts){
+          candidates.push(`/${slug}/${n}.${e}`);
+        }
+      }
       const img = new Image();
       img.loading = 'lazy';
       img.alt = 'Kapak';
-      img.onerror = ()=>{ /* kapak yoksa svg ikon kalsın */ };
-      // ilki dener, hata olursa sıradakine geçer
       let i = 0;
       const tryNext = ()=>{
         if(i >= candidates.length) return;
@@ -111,8 +113,7 @@
         b.textContent = img.src.split('/').pop();
         cover.appendChild(b);
       };
-      // hata halinde sıradaki formata geç
-      img.onerror = ()=>{ if(i < candidates.length) tryNext(); };
+      img.onerror = ()=>{ tryNext(); };
       tryNext();
     }
 

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ledmuse.github.io • HTML Dizin</title>
+  <meta name="description" content="Bu sayfa, depodaki tüm .html dosyalarını otomatik olarak listeler." />
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --panel: #111826;
+      --muted: #8093ad;
+      --text: #e8eef7;
+      --link: #7cc7ff;
+      --accent: #4f46e5;
+      --ok: #22c55e;
+      --warn: #f59e0b;
+      --err: #ef4444;
+      --radius: 16px;
+    }
+    html, body { height: 100%; }
+    body {
+      margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1200px 800px at 15% -10%, #152238 0%, transparent 60%),
+                  radial-gradient(900px 700px at 110% 10%, #1a2440 0%, transparent 50%),
+                  var(--bg);
+      color: var(--text);
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 24px; }
+    header {
+      display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom: 18px;
+    }
+    .badge { font-size:12px; color:#cfe3ff; background:#0e1726; border:1px solid #203048; padding:4px 8px; border-radius:999px }
+    h1 { font-size: clamp(22px, 3vw, 32px); margin: 0 0 6px 0 }
+    p.sub { margin:0; color: var(--muted) }
+
+    .toolbar { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin: 18px 0 }
+    .input, .select {
+      background: var(--panel); color: var(--text); border:1px solid #1f2b3e; border-radius: 12px; padding: 10px 12px;
+      outline: none;
+    }
+    .input::placeholder{ color:#6f86a7 }
+    .btn { cursor:pointer; background: var(--accent); color:white; border:none; border-radius:12px; padding: 10px 14px; font-weight:600 }
+    .btn.secondary{ background:#172235; border:1px solid #24344f }
+
+    .card { background: rgba(17,24,38,.6); border:1px solid #1f2b3e; border-radius: var(--radius); overflow:hidden }
+    .card-head{ display:flex; align-items:center; justify-content:space-between; padding: 12px 14px; background: linear-gradient(180deg, rgba(26,38,61,.7), rgba(17,24,38,.7)); border-bottom:1px solid #1f2b3e }
+    .small{ color: var(--muted); font-size:12px }
+
+    .tree { list-style:none; margin:0; padding:0 }
+    .tree li { border-left: 1px dashed #2a3b57; padding-left: 12px; margin-left: 12px; position: relative }
+    .tree li::before{ content:""; position:absolute; left:-1px; top: 14px; width: 10px; height:1px; background:#2a3b57 }
+    .tree a { color: var(--link); text-decoration:none }
+    .tree a:hover { text-decoration:underline }
+
+    .path { color:#c5d7f2; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace }
+    .muted { color: var(--muted) }
+
+    .footer { margin-top:24px; color: var(--muted); font-size:12px }
+    .status { display:flex; gap:8px; align-items:center }
+    .dot { width:8px; height:8px; border-radius:999px; background: var(--ok) }
+    .dot.warn{ background: var(--warn) }
+    .dot.err{ background: var(--err) }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <span class="badge">GitHub Pages</span>
+      <div>
+        <h1>Depodaki tüm <span class="path">.html</span> dosyaları</h1>
+        <p class="sub">Bu index sayfası içeriği GitHub API üzerinden otomatik keşfeder ve listeler.</p>
+      </div>
+    </header>
+
+    <div class="toolbar">
+      <input id="search" class="input" placeholder="Ara: dosya adı veya yol" />
+      <select id="sort" class="select" title="Sırala">
+        <option value="path">Yola göre</option>
+        <option value="name">Ada göre</option>
+        <option value="depth">Klasör derinliğine göre</option>
+      </select>
+      <button id="expand" class="btn secondary" title="Ağaç görünümünü genişlet/daralt">Tümünü Genişlet</button>
+      <button id="refresh" class="btn" title="Listeyi yenile">Yenile</button>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="status"><span id="statusDot" class="dot"></span> <span id="statusText" class="small">Yükleniyor…</span></div>
+        <div class="small">Repo: <span class="path">ledmuse/ledmuse.github.io</span> • Dal: <span id="branch" class="path">(belirleniyor)</span></div>
+      </div>
+      <div id="results" style="padding:14px 16px"></div>
+    </div>
+
+    <div class="footer">
+      <div>Bu sayfa yalnızca <span class="path">.html</span> dosyalarını listeler (bu <span class="path">index.html</span> hariç). Alt klasörler <em>özyinelemeli</em> olarak taranır.</div>
+      <div>GitHub API sınırına takılırsanız (rate limit), biraz sonra tekrar deneyin.</div>
+    </div>
+  </div>
+
+  <script>
+    // --- Yapılandırma ---
+    const OWNER = "ledmuse";
+    const REPO  = "ledmuse.github.io";
+
+    // Basit yardımcılar
+    const $ = (sel) => document.querySelector(sel);
+    const status = (txt, level="ok") => {
+      const dot = $("#statusDot");
+      dot.className = "dot" + (level === "warn" ? " warn" : level === "err" ? " err" : "");
+      $("#statusText").textContent = txt;
+    };
+
+    async function fetchJSON(url, opts={}){
+      const res = await fetch(url, { headers: { 'Accept': 'application/vnd.github.v3+json' }, ...opts });
+      if(!res.ok){
+        const text = await res.text();
+        throw new Error(`HTTP ${res.status} → ${text}`);
+      }
+      return res.json();
+    }
+
+    async function getDefaultBranch(){
+      const data = await fetchJSON(`https://api.github.com/repos/${OWNER}/${REPO}`);
+      return data.default_branch || 'main';
+    }
+
+    async function listHtmlFilesRecursively(branch){
+      const files = [];
+      async function walk(path=""){
+        const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}?ref=${encodeURIComponent(branch)}`;
+        const items = await fetchJSON(url);
+        for(const it of items){
+          if(it.type === 'dir'){
+            await walk(it.path);
+          } else if(it.type === 'file'){
+            const name = it.name.toLowerCase();
+            if(name.endsWith('.html') && name !== 'index.html'){
+              files.push({
+                name: it.name,
+                path: it.path,
+                depth: it.path.split('/').length - 1,
+                url: `/${it.path}` // GitHub Pages kökünden bağlanır
+              });
+            }
+          }
+        }
+      }
+      await walk("");
+      return files;
+    }
+
+    function renderTree(files){
+      const q = $("#search").value.trim().toLowerCase();
+      const sortBy = $("#sort").value;
+      let list = files.filter(f => !q || f.name.toLowerCase().includes(q) || f.path.toLowerCase().includes(q));
+
+      list.sort((a,b)=>{
+        if(sortBy === 'name') return a.name.localeCompare(b.name);
+        if(sortBy === 'depth') return a.depth - b.depth || a.path.localeCompare(b.path);
+        return a.path.localeCompare(b.path);
+      });
+
+      // Ağaç yapısını kur
+      const tree = {};
+      for(const f of list){
+        const parts = f.path.split('/');
+        let node = tree;
+        for(let i=0;i<parts.length-1;i++){
+          const p = parts[i];
+          node.children ||= {};
+          node = node.children[p] ||= { children: {} };
+        }
+        node.children ||= {};
+        node.children[f.name] = { file: f };
+      }
+
+      function makeList(node, basePath=""){
+        const ul = document.createElement('ul');
+        ul.className = 'tree';
+        const entries = Object.entries(node.children||{}).sort((a,b)=>{
+          const isDirA = !a[1].file;
+          const isDirB = !b[1].file;
+          if(isDirA !== isDirB) return isDirA ? -1 : 1; // klasörler önce
+          return a[0].localeCompare(b[0]);
+        });
+        for(const [name, child] of entries){
+          const li = document.createElement('li');
+          if(child.file){
+            const a = document.createElement('a');
+            a.href = child.file.url;
+            a.textContent = name;
+            a.title = child.file.path;
+            li.appendChild(a);
+            const span = document.createElement('span');
+            span.className = 'muted';
+            span.style.marginLeft = '8px';
+            span.textContent = `• ${child.file.path}`;
+            li.appendChild(span);
+          } else {
+            const strong = document.createElement('strong');
+            strong.textContent = name + '/';
+            li.appendChild(strong);
+            li.appendChild(makeList(child, basePath + name + '/'));
+          }
+          ul.appendChild(li);
+        }
+        return ul;
+      }
+
+      const mount = $("#results");
+      mount.innerHTML = '';
+      mount.appendChild(makeList({ children: tree }));
+
+      const count = list.length;
+      status(count ? `${count} HTML dosyası bulundu` : 'Hiç .html dosyası bulunamadı', count ? 'ok' : 'warn');
+    }
+
+    async function bootstrap(){
+      try{
+        status('Depo bilgisi alınıyor…');
+        const branch = await getDefaultBranch();
+        $("#branch").textContent = branch;
+        status('HTML dosyaları taranıyor…');
+        window.__ALL_FILES__ = await listHtmlFilesRecursively(branch);
+        renderTree(window.__ALL_FILES__);
+      }catch(err){
+        console.error(err);
+        status('Bir hata oluştu: ' + err.message, 'err');
+        $("#results").innerHTML = `<div class="small">GitHub API erişiminde sorun çıktı. Depo herkese açık olmalı ve rate limit aşılmamalıdır.</div>`;
+      }
+    }
+
+    // Etkileşimler
+    $("#search").addEventListener('input', () => renderTree(window.__ALL_FILES__||[]));
+    $("#sort").addEventListener('change', () => renderTree(window.__ALL_FILES__||[]));
+    $("#refresh").addEventListener('click', bootstrap);
+
+    // Basit genişlet/daralt (liste zaten açık, bu butonu UX için bıraktık)
+    $("#expand").addEventListener('click', () => {
+      // Görsel amaçlı bildirim
+      const btn = $("#expand");
+      btn.textContent = btn.textContent.includes('Genişlet') ? 'Tümünü Daralt (görsel)' : 'Tümünü Genişlet';
+    });
+
+    bootstrap();
+  </script>
+</body>
+</html>

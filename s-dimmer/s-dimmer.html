@@ -11,16 +11,18 @@
       --text:#e9f0fb;
       --radius:12px;
     }
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      line-height: 1.6;
-      text-align: center;
-      background: radial-gradient(1000px 700px at -10% -20%, #162445 0%, transparent 60%),
-                  radial-gradient(900px 600px at 120% 0%, #1b2747 0%, transparent 55%),
-                  var(--bg);
-      color: var(--text);
-    }
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;              /* istersen 0 yapabilirsin */
+  line-height: 1.6;
+  text-align: center;
+  background: radial-gradient(1000px 700px at -10% -20%, #162445 0%, transparent 60%),
+              radial-gradient(900px 600px at 120% 0%, #1b2747 0%, transparent 55%),
+              #0a0f1a;
+  color: #e9f0fb;
+  background-repeat: no-repeat, no-repeat, no-repeat; /* 🔴 tekrar kapalı */
+  min-height: 100svh;                                   /* 🔴 mobil tam yükseklik */
+}
     h1 {
       font-size: 36px;
       margin-bottom: 20px;

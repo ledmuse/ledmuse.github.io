@@ -4,9 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Kullanım Kılavuzları</title>
-  <meta name="description" content="ledmuse.github.io deposundaki kullanım kılavuzlarını listeler." />
   <style>
-    :root{ --bg:#0a0f1a; --panel:#0f1729; --muted:#95a4c7; --text:#e9f0fb; --ok:#22c55e; --radius:18px; }
+    :root{ --bg:#0a0f1a; --muted:#95a4c7; --text:#e9f0fb; --ok:#22c55e; --radius:18px; }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
@@ -27,8 +26,7 @@
     .cover.has-img{background:none}
     .cover img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
     .icon{opacity:.9; z-index:1}
-    .img-badge{position:absolute; right:8px; bottom:8px; background:rgba(0,0,0,.55); color:#fff; padding:2px 6px;
-      border-radius:8px; font-size:11px}
+    .img-badge{position:absolute; right:8px; bottom:8px; background:rgba(0,0,0,.55); color:#fff; padding:2px 6px; border-radius:8px; font-size:11px}
     .body{padding:12px 14px}
     .title{margin:0 0 6px 0; font-size:16px}
     .desc{margin:0; color:var(--muted); font-size:13px; min-height:38px}
@@ -45,7 +43,7 @@
   </div>
 
   <template id="cardTemplate">
-    <article class="card" data-slug="">
+    <article class="card">
       <div class="cover">
         <!-- yedek ikon -->
         <svg class="icon" width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -54,8 +52,8 @@
         </svg>
       </div>
       <div class="body">
-        <h3 class="title">Yükleniyor…</h3>
-        <p class="desc">…</p>
+        <h3 class="title">Başlık</h3>
+        <p class="desc">Ürün sayfasına gitmek için tıklayın.</p>
         <div class="meta"><span class="dot"></span><span class="path"></span></div>
       </div>
       <a class="link" target="_self" rel="noopener"></a>
@@ -63,7 +61,7 @@
   </template>
 
   <script>
-    // Sabit klasör listesi → en hızlı yol
+    // Sabit klasör listesi → net ve hızlı
     const PROJECTS = [
       "12-24V-ac-kapat-led-kontrol-unitesi",
       "cuppon-bioklimatik-pano",
@@ -77,162 +75,54 @@
       "tilt-piston-motor-kontrol-unitesi",
     ];
     const grid = document.getElementById('grid');
-    const TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 gün cache
 
-    // Küçük yardımcılar
     const pretty = s => s.replace(/[-_]+/g,' ').replace(/\b\w/g, c=>c.toUpperCase());
-    const cacheGet = (k) => {
-      try { const j = JSON.parse(localStorage.getItem(k) || 'null');
-            if(!j) return null;
-            if(Date.now() - j.t > TTL_MS) { localStorage.removeItem(k); return null; }
-            return j.v;
-      } catch(_) { return null; }
-    };
-    const cacheSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify({t:Date.now(), v})); } catch(_){} };
-
-    // Ağ isteklerini sınırla (eşzamanlı 3)
-    function pLimit(n){
-      const q=[]; let active=0;
-      const next=()=>{ if(!q.length || active>=n) return; active++; const {fn,resolve,reject}=q.shift();
-        fn().then(resolve,reject).finally(()=>{active--; next();});
-      };
-      return (fn)=> new Promise((resolve,reject)=>{ q.push({fn,resolve,reject}); next(); });
-    }
-    const limit = pLimit(3);
-
-    async function fetchText(url, timeout=8000){
-      const ctrl = new AbortController(); const id = setTimeout(()=>ctrl.abort(), timeout);
-      try{
-        const r = await fetch(url, { mode:'same-origin', signal: ctrl.signal });
-        if(!r.ok) throw 0;
-        return await r.text();
-      }catch(_){ return null; } finally{ clearTimeout(id); }
-    }
-    async function headOk(url, timeout=5000){
-      const ctrl = new AbortController(); const id = setTimeout(()=>ctrl.abort(), timeout);
-      try{
-        const r = await fetch(url, { method:'HEAD', mode:'same-origin', signal: ctrl.signal });
-        return r.ok;
-      }catch(_){ return false; } finally{ clearTimeout(id); }
-    }
-
-    function parseMeta(html){
-      if(!html) return { title:'', desc:'', og:'' };
-      const doc = new DOMParser().parseFromString(html, 'text/html');
-      const title = (doc.querySelector('title')?.textContent || '').trim();
-      const desc  = (doc.querySelector('meta[name="description"]')?.getAttribute('content') ||
-                     doc.querySelector('h1')?.textContent || '').trim();
-      const og    = (doc.querySelector('meta[property="og:image"]')?.getAttribute('content') || '').trim();
-      return { title, desc, og };
-    }
-
-    async function findPage(slug){
-      // Önce index.html; 404 ise klasör kökü
-      const idx = `/${slug}/index.html`;
-      const html = await fetchText(idx);
-      if(html) return { href: (idx), html };
-      const root = `/${slug}/`;
-      return { href: root, html: await fetchText(root) };
-    }
-
-    async function findCover(slug, og){
-      // 1) og:image (göreliyse tamamla), hızlı kontrol
-      if(og){
-        const url = og.startsWith('http') ? og : `/${slug}/${og.replace(/^\\/?/, '')}`;
-        if(await headOk(url) || await imgExists(url)) return url;
-      }
-      // 2) Kısa liste: cover.webp → cover.jpg → cover.png
-      const candidates = [`/${slug}/cover.webp`, `/${slug}/cover.jpg`, `/${slug}/cover.png`];
-      for(const u of candidates){
-        if(await headOk(u) || await imgExists(u)) return u;
-      }
-      return null;
-    }
-
-    function imgExists(url){
-      return new Promise(res=>{
-        const i=new Image(); i.onload=()=>res(true); i.onerror=()=>res(false); i.src=url;
-      });
-    }
 
     function makeCard(slug){
-      const card = document.importNode(document.getElementById('cardTemplate').content, true).firstElementChild;
-      card.dataset.slug = slug;
+      const node = document.getElementById('cardTemplate').content.cloneNode(true);
+      const card = node.firstElementChild;
       card.querySelector('.title').textContent = pretty(slug);
-      card.querySelector('.desc').textContent  = 'Yükleniyor…';
-      card.querySelector('.path').textContent  = slug+'/';
-      card.querySelector('.link').href = `/${slug}/`;
+      card.querySelector('.path').textContent  = `${slug}/index.html`;
+      card.querySelector('.link').href        = `/${slug}/index.html`;
+      // kapak: cover.webp → cover.jpg → cover.png
+      setCover(card, slug);
       return card;
     }
 
-    function setCover(card, url){
+    function setCover(card, slug){
       const cover = card.querySelector('.cover');
-      if(!url){ cover.classList.remove('has-img'); return; }
-      cover.classList.add('has-img'); cover.innerHTML = '';
-      const img = new Image(); img.loading='lazy'; img.alt='Kapak'; img.src=url;
-      img.onerror = ()=>{ cover.classList.remove('has-img'); cover.innerHTML = coverFallback; };
-      cover.appendChild(img);
-      const b = document.createElement('span'); b.className='img-badge'; b.textContent = url.split('/').pop();
-      cover.appendChild(b);
-    }
-    const coverFallback = `
-      <svg class="icon" width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 3a6 6 0 0 0-6 6c0 2.22 1.2 4.15 3 5.2V18a3 3 0 0 0 3 3 3 3 0 0 0 3-3v-3.8c1.8-1.05 3-2.98 3-5.2a6 6 0 0 0-6-6Z" stroke="currentColor" stroke-width="1.2"/>
-        <path d="M9 11h6M8 14h8" stroke="currentColor" stroke-width="1.2"/>
-      </svg>`;
-
-    // Sadece görünürdeki kartları yükle
-    const io = new IntersectionObserver((entries)=>{
-      for(const e of entries){
-        if(!e.isIntersecting) continue;
-        const card = e.target;
-        io.unobserve(card);
-        hydrate(card);
-      }
-    }, { rootMargin: '200px 0px' });
-
-    async function hydrate(card){
-      const slug = card.dataset.slug;
-      const ck = 'meta:'+slug;
-      const cached = cacheGet(ck);
-      if(cached){
-        card.querySelector('.title').textContent = cached.title || pretty(slug);
-        card.querySelector('.desc').textContent  = cached.desc || 'Ürün sayfasına gitmek için tıklayın.';
-        card.querySelector('.path').textContent  = cached.path || `${slug}/index.html`;
-        card.querySelector('.link').href        = cached.href || `/${slug}/`;
-        setCover(card, cached.image || null);
-        return;
-      }
-
-      // Ağ isteklerini sınırla
-      const { href, html } = await limit(()=>findPage(slug));
-      const meta = parseMeta(html);
-      const image = await limit(()=>findCover(slug, meta.og));
-
-      const data = {
-        title: meta.title || pretty(slug),
-        desc:  meta.desc  || 'Ürün sayfasına gitmek için tıklayın.',
-        path:  href.replace(/^\//,''),
-        href,  image
+      const candidates = [`/${slug}/cover.webp`, `/${slug}/cover.jpg`, `/${slug}/cover.png`];
+      const img = new Image();
+      img.loading = 'lazy';
+      img.alt = 'Kapak';
+      img.onerror = ()=>{ /* kapak yoksa svg ikon kalsın */ };
+      // ilki dener, hata olursa sıradakine geçer
+      let i = 0;
+      const tryNext = ()=>{
+        if(i >= candidates.length) return;
+        img.src = candidates[i++];
       };
-      cacheSet(ck, data);
-
-      card.querySelector('.title').textContent = data.title;
-      card.querySelector('.desc').textContent  = data.desc;
-      card.querySelector('.path').textContent  = data.path;
-      card.querySelector('.link').href        = data.href;
-      setCover(card, data.image || null);
+      img.onload = ()=>{
+        cover.classList.add('has-img');
+        cover.innerHTML = '';
+        cover.appendChild(img);
+        const b = document.createElement('span');
+        b.className = 'img-badge';
+        b.textContent = img.src.split('/').pop();
+        cover.appendChild(b);
+      };
+      // hata halinde sıradaki formata geç
+      img.onerror = ()=>{ if(i < candidates.length) tryNext(); };
+      tryNext();
     }
 
     function bootstrap(){
+      grid.innerHTML = '';
       for(const slug of PROJECTS){
-        const card = makeCard(slug);
-        grid.appendChild(card);
-        io.observe(card);
+        grid.appendChild(makeCard(slug));
       }
     }
     bootstrap();
   </script>
 </body>
 </html>
-

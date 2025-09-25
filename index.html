@@ -4,29 +4,39 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Kullanım Kılavuzları</title>
-  <meta name="description" content="ledmuse.github.io deposundaki kullanım kılavuzlarını bir ana sayfada listeler." />
+  <meta name="description" content="ledmuse.github.io deposundaki kullanım kılavuzlarını listeler." />
   <style>
     :root{ --bg:#0a0f1a; --panel:#0f1729; --muted:#95a4c7; --text:#e9f0fb; --ok:#22c55e; --radius:18px; }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{margin:0; font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial; color:var(--text);
-      background: radial-gradient(1000px 700px at -10% -20%, #162445 0%, transparent 60%),
-                  radial-gradient(900px 600px at 120% 0%, #1b2747 0%, transparent 55%),
-                  var(--bg);}    
+    body{
+      margin:0; font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial;
+      color:var(--text);
+      background:
+        radial-gradient(1000px 700px at -10% -20%, #162445 0%, transparent 60%),
+        radial-gradient(900px 600px at 120% 0%, #1b2747 0%, transparent 55%),
+        var(--bg);
+    }
     .wrap{max-width:1100px; margin:0 auto; padding:24px}
 
-    /* Üst başlık */
-    h1.page-title{ text-align:center; font-size:clamp(28px,6vw,60px); font-weight:800; letter-spacing:.2px; margin:0 0 24px; }
+    /* Üst başlık (sadece bu kalsın) */
+    h1.page-title{
+      text-align:center; font-size:clamp(28px,6vw,60px);
+      font-weight:800; letter-spacing:.2px; margin:0 0 24px;
+    }
 
     /* Kart ızgarası */
     .grid{display:grid; grid-template-columns: repeat( auto-fill, minmax(240px,1fr) ); gap:14px}
-    .card{position:relative; background:rgba(17,24,38,.6); border:1px solid #22314f; border-radius:var(--radius); overflow:hidden; transition: transform .2s ease, box-shadow .2s ease}
+    .card{position:relative; background:rgba(17,24,38,.6); border:1px solid #22314f; border-radius:var(--radius);
+      overflow:hidden; transition: transform .2s ease, box-shadow .2s ease}
     .card:hover{transform: translateY(-2px); box-shadow:0 8px 30px rgba(0,0,0,.25)}
-    .cover{height:120px; background:linear-gradient(120deg, rgba(96,165,250,.18), rgba(124,58,237,.18)); display:flex; align-items:center; justify-content:center; position:relative}
+    .cover{height:120px; background:linear-gradient(120deg, rgba(96,165,250,.18), rgba(124,58,237,.18));
+      display:flex; align-items:center; justify-content:center; position:relative}
     .cover.has-img{background:none}
     .cover img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
     .icon{opacity:.9; z-index:1}
-    .img-badge{position:absolute; right:8px; bottom:8px; background:rgba(0,0,0,.55); color:#fff; padding:2px 6px; border-radius:8px; font-size:11px}
+    .img-badge{position:absolute; right:8px; bottom:8px; background:rgba(0,0,0,.55); color:#fff; padding:2px 6px;
+      border-radius:8px; font-size:11px}
     .body{padding:12px 14px}
     .title{margin:0 0 6px 0; font-size:16px}
     .desc{margin:0; color:var(--muted); font-size:13px; min-height:38px}
@@ -38,7 +48,7 @@
 </head>
 <body>
   <div class="wrap">
-    <!-- İSTENEN: sadece bu başlık kalsın -->
+    <!-- Üstte sadece bu başlık -->
     <h1 class="page-title">Kullanım Kılavuzları</h1>
 
     <!-- Kartlar -->
@@ -64,143 +74,142 @@
   </template>
 
   <script>
-    // ===== Yapılandırma (artık klasör adları otomatik bulunur) =====
-    const OWNER = "ledmuse";
-    const REPO  = "ledmuse.github.io";
+    // ===== API YOK: Sabit 10 klasör, rate limit sorunu olmaz =====
+    const PROJECTS = [
+      "12-24V-ac-kapat-led-kontrol-unitesi",
+      "cuppon-bioklimatik-pano",
+      "cuppon-tilt-pano",
+      "rgb-led-dimmer",
+      "s-bioklimatik-pano",
+      "s-dimmer",
+      "s-tilt-bioklimatik-pano",
+      "sftr-led-dimmer-multi",
+      "sftr-led-dimmer",
+      "tilt-piston-motor-kontrol-unitesi",
+    ];
 
-    const $ = (s) => document.querySelector(s);
-    const grid = $("#grid");
+    const grid = document.getElementById('grid');
 
     function makeCard(){
-      const node = document.importNode($("#cardTemplate").content, true);
+      const node = document.importNode(document.getElementById('cardTemplate').content, true);
       return node.firstElementChild;
+    }
+
+    function fallbackIcon(){
+      return `
+        <svg class="icon" width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 3a6 6 0 0 0-6 6c0 2.22 1.2 4.15 3 5.2V18a3 3 0 0 0 3 3 3 3 0 0 0 3-3v-3.8c1.8-1.05 3-2.98 3-5.2a6 6 0 0 0-6-6Z" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M9 11h6M8 14h8" stroke="currentColor" stroke-width="1.2"/>
+        </svg>`;
     }
 
     function setCard(card, {title, desc, href, path, image}){
       card.querySelector('.title').textContent = title || 'Başlık bulunamadı';
-      card.querySelector('.desc').textContent  = desc || 'Ürün sayfasına gitmek için tıklayın.';
+      card.querySelector('.desc').textContent  = desc || '';
       card.querySelector('.path').textContent  = path || '';
       card.querySelector('.link').href = href || '#';
       const cover = card.querySelector('.cover');
-      cover.innerHTML = '';
       if(image){
+        cover.classList.add('has-img');
+        cover.innerHTML = '';
         const img = new Image();
         img.loading = 'lazy';
         img.alt = title || 'Kapak görseli';
         img.src = image;
-        cover.classList.add('has-img');
+        img.onerror = ()=>{ cover.classList.remove('has-img'); cover.innerHTML = fallbackIcon(); };
         cover.appendChild(img);
         const b = document.createElement('span');
         b.className = 'img-badge';
         b.textContent = image.split('/').pop();
         cover.appendChild(b);
-      }else{
+      } else {
         cover.classList.remove('has-img');
-        cover.innerHTML = `
-          <svg class="icon" width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 3a6 6 0 0 0-6 6c0 2.22 1.2 4.15 3 5.2V18a3 3 0 0 0 3 3 3 3 0 0 0 3-3v-3.8c1.8-1.05 3-2.98 3-5.2a6 6 0 0 0-6-6Z" stroke="currentColor" stroke-width="1.2"/>
-            <path d="M9 11h6M8 14h8" stroke="currentColor" stroke-width="1.2"/>
-          </svg>`;
+        cover.innerHTML = fallbackIcon();
       }
     }
 
-    async function fetchJSON(url){
-      const r = await fetch(url, { headers: { 'Accept': 'application/vnd.github.v3+json' } });
-      if(!r.ok) throw new Error(await r.text());
-      return r.json();
-    }
-
-    async function getDefaultBranch(){
-      const repo = await fetchJSON(`https://api.github.com/repos/${OWNER}/${REPO}`);
-      return repo.default_branch || 'main';
-    }
-
-    async function getRepoTree(branch){
-      // Tek istekte tüm ağaç (daha az hata, daha az rate limit)
-      const tree = await fetchJSON(`https://api.github.com/repos/${OWNER}/${REPO}/git/trees/${encodeURIComponent(branch)}?recursive=1`);
-      return tree.tree || [];
-    }
-
-    function findSlugsWithHtml(tree){
-      // slug = path'in ilk bölümü; altında en az bir .html olan klasörler
-      const htmlBlobs = tree.filter(t => t.type === 'blob' && /\.html?$/i.test(t.path) && t.path.includes('/'));
-      const slugs = Array.from(new Set(htmlBlobs.map(t => t.path.split('/')[0])));
-      return slugs;
-    }
-
-    function pickHtmlForFolder(tree, slug){
-      const under = tree.filter(t => t.type === 'blob' && t.path.startsWith(slug + '/') && /\.html?$/i.test(t.path));
-      if(!under.length) return null;
-      const pref = under.find(x => x.path.toLowerCase() === `${slug}/index.html`);
-      const byDepth = (a,b)=> (a.path.split('/').length - b.path.split('/').length) || a.path.localeCompare(b.path);
-      const chosen = pref || under.sort(byDepth)[0];
-      return chosen.path.replace(slug + '/', ''); // dosya adı veya alt yol
-    }
-
-    function pickImageForFolder(tree, slug){
-      const isImg = (p)=>/\.(png|jpe?g|webp|gif|avif|svg)$/i.test(p);
-      const files = tree.filter(t => t.type === 'blob' && t.path.startsWith(slug + '/') && isImg(t.path));
-      if(!files.length) return null;
-      const pref = /(cover|hero|main|thumbnail|thumb|kapak)\.(png|jpe?g|webp|gif|avif|svg)$/i;
-      const hit = files.find(f => pref.test(f.path.split('/').pop()));
-      const byDepth = (a,b)=> (a.path.split('/').length - b.path.split('/').length) || a.path.localeCompare(b.path);
-      const chosen = hit || files.sort(byDepth)[0];
-      return chosen.path.replace(slug + '/', '');
-    }
-
-    async function resolveMetaFromHtml(href){
+    async function fetchText(url){
       try{
-        const res = await fetch(href, { mode: 'same-origin' });
-        if(!res.ok) throw new Error('page not ok');
-        const html = await res.text();
-        const doc  = new DOMParser().parseFromString(html, 'text/html');
-        const title = (doc.querySelector('title')?.textContent || '').trim();
-        const desc  = (doc.querySelector('meta[name="description"]')?.getAttribute('content') || doc.querySelector('h1')?.textContent || '').trim();
-        const og = (doc.querySelector('meta[property="og:image"]')?.getAttribute('content') || '').trim();
-        return { title, desc, og };
-      }catch(_){ return { title:'', desc:'', og:'' }; }
+        const r = await fetch(url, { mode: 'same-origin' });
+        if(!r.ok) throw new Error('not ok');
+        return await r.text();
+      }catch(_){ return null; }
     }
 
-    function prettyLabelFromSlug(slug){
-      return slug.replace(/[-_]+/g,' ').replace(/\b\w/g, c=>c.toUpperCase());
+    async function firstWorkingPage(slug){
+      // index.html öncelikli; birkaç makul aday daha dene
+      const candidates = [
+        `/${slug}/`,
+        `/${slug}/index.html`,
+        `/${slug}/home.html`,
+        `/${slug}/default.html`,
+        `/${slug}/${slug}.html`,
+      ];
+      for(const href of candidates){
+        const html = await fetchText(href);
+        if(html){ return { href, html }; }
+      }
+      return { href: `/${slug}/`, html: null };
+    }
+
+    function parseMetaFromHtml(html){
+      if(!html) return { title:'', desc:'', og:'' };
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const title = (doc.querySelector('title')?.textContent || '').trim();
+      const desc  = (doc.querySelector('meta[name="description"]')?.getAttribute('content') || doc.querySelector('h1')?.textContent || '').trim();
+      const og    = (doc.querySelector('meta[property="og:image"]')?.getAttribute('content') || '').trim();
+      return { title, desc, og };
+    }
+
+    function imageExists(url){
+      return new Promise(res=>{
+        const i = new Image();
+        i.onload = ()=>res(true);
+        i.onerror = ()=>res(false);
+        i.src = url;
+      });
+    }
+
+    async function resolveImage(slug, og){
+      // 1) og:image (göreli ise slug ile birleştir)
+      if(og){
+        const url = og.startsWith('http') ? og : `/${slug}/${og.replace(/^\\/?/, '')}`;
+        if(await imageExists(url)) return url;
+      }
+      // 2) Sabit dosya adları
+      const names = ['cover','hero','main','thumbnail','thumb','kapak'];
+      const exts  = ['webp','jpg','jpeg','png','gif','avif','svg'];
+      for(const n of names){
+        for(const e of exts){
+          const u = `/${slug}/${n}.${e}`;
+          if(await imageExists(u)) return u;
+        }
+      }
+      return null;
+    }
+
+    function labelFromSlug(slug){
+      return slug.replace(/[-_]+/g,' ').replace(/\\b\\w/g, c=>c.toUpperCase());
     }
 
     async function bootstrap(){
       grid.innerHTML = '';
-      try{
-        const branch = await getDefaultBranch();
-        const tree = await getRepoTree(branch);
-        const slugs = findSlugsWithHtml(tree);
-        if(!slugs.length){
-          grid.innerHTML = '<p style="opacity:.8">Klasörlerin altında .html dosyası bulunamadı.</p>'; return;
-        }
-        for(const slug of slugs){
-          const card = makeCard();
-          grid.appendChild(card);
-          setCard(card, { title: prettyLabelFromSlug(slug), desc: 'Yükleniyor…', href: `/${slug}/`, path: slug + '/' });
+      for(const slug of PROJECTS){
+        const card = makeCard();
+        grid.appendChild(card);
+        setCard(card, { title: labelFromSlug(slug), desc: 'Yükleniyor…', href: `/${slug}/`, path: slug + '/' });
 
-          // Hedef sayfa ve meta
-          const htmlRel = pickHtmlForFolder(tree, slug);
-          const pageHref = htmlRel ? `/${slug}/${htmlRel.toLowerCase()==='index.html' ? '' : htmlRel}` : `/${slug}/`;
-          const meta = await resolveMetaFromHtml(pageHref);
+        const { href, html } = await firstWorkingPage(slug);
+        const meta = parseMetaFromHtml(html);
+        const img  = await resolveImage(slug, meta.og);
 
-          // Görsel öncelik: og:image → klasörden görsel → yoksa ikon
-          let imgRel = pickImageForFolder(tree, slug);
-          let imgUrl = null;
-          if(meta.og){ imgUrl = meta.og.startsWith('http') ? meta.og : `/${slug}/${meta.og.replace(/^\/?/, '')}`; }
-          else if(imgRel){ imgUrl = `/${slug}/${imgRel}`; }
-
-          setCard(card, {
-            title: meta.title || prettyLabelFromSlug(slug),
-            desc: meta.desc || 'Ürün sayfasına gitmek için tıklayın.',
-            href: pageHref,
-            path: htmlRel ? `${slug}/${htmlRel}` : `${slug}/`,
-            image: imgUrl
-          });
-        }
-      }catch(err){
-        console.error(err);
-        grid.innerHTML = `<p style="opacity:.85">Bir hata oluştu: ${err.message.replace(/[<>]/g,'')}<br>Depo herkese açık olmalı ve GitHub API oran sınırı aşılmamalıdır.</p>`;
+        setCard(card, {
+          title: meta.title || labelFromSlug(slug),
+          desc: meta.desc || 'Ürün sayfasına gitmek için tıklayın.',
+          href,
+          path: href.replace(/^\\//,''),
+          image: img
+        });
       }
     }
 

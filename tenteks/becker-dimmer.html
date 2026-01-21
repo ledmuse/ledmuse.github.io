@@ -1,1 +1,120 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Becker Alıcılı Led Dimmer
+    Kullanım Kılavuzu</title>
+  <style>
+    /* AÇIK TEMA RENK PALETİ */
+    :root {
+      --bg-color: #f5f7fa;        /* açık gri-mavi arka plan */
+      --card-color: #ffffff;     /* beyaz kart alanları */
+      --primary-color: #4a90e2;  /* yumuşak mavi vurgu rengi */
+      --text-color: #333333;     /* koyu gri metin */
+      --border-color: #e0e0e0;
+    }
 
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      padding: 16px 24px;
+      background-color: var(--card-color);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    header img {
+      height: 50px;
+    }
+
+    main {
+      max-width: 1000px;
+      margin: 24px auto;
+      padding: 0 16px;
+    }
+
+    .card {
+      background-color: var(--card-color);
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .product-image {
+      text-align: center;
+    }
+
+    .product-image img {
+      max-width: 100%;
+      border-radius: 8px;
+    }
+
+    h1, h2 {
+      color: var(--primary-color);
+      margin-top: 0;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 16px;
+      font-size: 14px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ÜST KISIM: SOL ÜSTTE LOGO -->
+  <header>
+    <img src="logo.png" alt="Logo" />
+  </header>
+
+  <!-- ANA İÇERİK -->
+  <main>
+
+    <!-- ÜRÜN FOTOĞRAFI -->
+    <div class="card product-image">
+      <h1>Ürün Adı</h1>
+      <img src="urun.jpg" alt="Ürün Fotoğrafı" />
+    </div>
+
+    <!-- ÜRÜN TANITIMI -->
+    <div class="card">
+      <h2>Ürün Tanıtımı</h2>
+      <p>
+        Bu ürün günlük kullanım için tasarlanmıştır. Şık tasarımı, dayanıklı
+        yapısı ve kullanıcı dostu özellikleri ile öne çıkar.
+      </p>
+    </div>
+
+    <!-- KULLANIM KILAVUZU -->
+    <div class="card">
+      <h2>Kullanım Kılavuzu</h2>
+      <ul>
+        <li>Ürünü ilk kullanımdan önce kontrol ediniz.</li>
+        <li>Talimatlara uygun şekilde çalıştırınız.</li>
+        <li>Temizlik ve bakımını düzenli yapınız.</li>
+        <li>Çocukların erişemeyeceği yerde saklayınız.</li>
+      </ul>
+    </div>
+
+  </main>
+
+  <footer>
+    © 2026 Ürün Firması. Tüm hakları saklıdır.
+  </footer>
+
+</body>
+</html>

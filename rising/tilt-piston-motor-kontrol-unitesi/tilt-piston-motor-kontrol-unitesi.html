@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <title>Kullanım Kılavuzları</title>
+  <style>
+    :root {
+      --bg:#0a0f1a;
+      --panel:#0f1729;
+      --muted:#95a4c7;
+      --text:#e9f0fb;
+      --radius:12px;
+    }
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;              /* istersen 0 yapabilirsin */
+  line-height: 1.6;
+  text-align: center;
+  background: radial-gradient(1000px 700px at -10% -20%, #162445 0%, transparent 60%),
+              radial-gradient(900px 600px at 120% 0%, #1b2747 0%, transparent 55%),
+              #0a0f1a;
+  color: #e9f0fb;
+  background-repeat: no-repeat, no-repeat, no-repeat; /* 🔴 tekrar kapalı */
+  min-height: 100svh;                                   /* 🔴 mobil tam yükseklik */
+}
+    h1 {
+      font-size: 36px;
+      margin-bottom: 20px;
+      color: var(--text);
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+      margin-top: 20px;
+    }
+    .card {
+      width: 100%;
+      max-width: 600px;
+      background: var(--panel);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-decoration: none;
+      color: inherit;
+      padding: 10px;
+      border: 1px solid #22314f;
+    }
+    .card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    }
+    .card img.preview {
+      width: 80%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      border-radius: var(--radius);
+    }
+    .label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 15px;
+      flex-wrap: wrap;
+    }
+    .label img.flag {
+      width: 36px;
+      height: auto;
+    }
+    .label span {
+      font-size: 28px;
+      font-weight: bold;
+      color: var(--text);
+    }
+    /* Küçük ekranlara özel ayar */
+    @media (max-width: 480px) {
+      body {
+        margin: 10px;
+      }
+      h1 {
+        font-size: 28px;
+      }
+      .card img.preview {
+        width: 95%;
+      }
+      .label span {
+        font-size: 24px;
+      }
+      .label img.flag {
+        width: 32px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sayfa başlığı -->
+  <h1>TILT PİSTON MOTOR KONTROL ÜNİTESİ</h1>
+
+  <div class="container">
+    <!-- Türkçe Kullanım Kılavuzu -->
+    <a class="card" href="https://www.youtube.com/playlist?list=PLxlT6Byl-RFaKMFSWbNPa7l_mdves5mZi" target="_blank">
+      <img class="preview" src="tilt-piston-motort-kontrol-unitesi.png" alt="Türkçe Kullanım Kılavuzu">
+      <div class="label">
+        <img class="flag" src="https://flagcdn.com/w320/tr.png" alt="Türk Bayrağı">
+        <span>Türkçe Kullanım Kılavuzu</span>
+      </div>
+    </a>
+
+    <!-- İngilizce Kullanım Kılavuzu -->
+    <a class="card" href="https://www.youtube.com/playlist?list=PLxlT6Byl-RFYQcwk1Wsit4AdC3cHMwucY" target="_blank">
+      <img class="preview" src="tilt-piston-motort-kontrol-unitesi.png" alt="English User Guide">
+      <div class="label">
+        <img class="flag" src="https://flagcdn.com/w320/us.png" alt="US Flag">
+        <span>English User Guide</span>
+      </div>
+    </a>
+  </div>
+
+</body>
+</html>

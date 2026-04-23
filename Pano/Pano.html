@@ -93,24 +93,24 @@
   <script>
     const PROJECTS = [
       {
-        slug: "Pano/s-bioklimatik-pano",
+        slug: "s-bioklimatik-pano",
         title: "S Bioklimatik Pano",
-        image: "Pano/s-bioklimatik-pano/s-bioklimatik-pano.jpg",
+        image: "s-bioklimatik-pano/s-bioklimatik-pano.jpg",
       },
       {
-        slug: "Pano/cuppon-bioklimatik-pano",
+        slug: "cuppon-bioklimatik-pano",
         title: "Cuppon Bioklimatik Pano",
-        image: "Pano/cuppon-bioklimatik-pano/cuppon-bioklimatik-pano.jpg",
+        image: "cuppon-bioklimatik-pano/cuppon-bioklimatik-pano.jpg",
       },
       {
-        slug: "Pano/s-tilt-bioklimatik-pano",
+        slug: "s-tilt-bioklimatik-pano",
         title: "S Tilt Bioklimatik Pano",
-        image: "Pano/s-tilt-bioklimatik-pano/s-tilt-bioklimatik-pano.jpg",
+        image: "s-tilt-bioklimatik-pano/s-tilt-bioklimatik-pano.jpg",
       },
       {
-        slug: "Pano/cuppon-tilt-pano",
+        slug: "cuppon-tilt-pano",
         title: "Cuppon Tilt Pano",
-        image: "Pano/cuppon-tilt-pano/cuppon-tilt-pano.png",
+        image: "cuppon-tilt-pano/cuppon-tilt-pano.png",
       }
     ];
 
@@ -121,9 +121,10 @@
       const card = template.content.cloneNode(true).firstElementChild;
       
       // Link Yapısı: /klasor/klasor.html (İsteğe bağlı değiştirebilirsin)
-      const href = `/${p.slug}/${p.slug}.html`;
-      card.querySelector('.link').href = href;
-      card.querySelector('.title').textContent = p.title;
+const href = `/Pano/${p.slug}/${p.slug}.html`; 
+
+card.querySelector('.link').href = href;
+card.querySelector('.title').textContent = p.title;
 
       // Kopyalama İşlemi
       const copyBtn = card.querySelector('.copy-btn');

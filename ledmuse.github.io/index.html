@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kullanım Kılavuzları</title>
+  <style>
+    :root{ --bg:#0a0f1a; --muted:#95a4c7; --text:#e9f0fb; --ok:#22c55e; --radius:18px; }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:sans-serif; color:var(--text);
+      background:
+        radial-gradient(1000px 700px at -10% -20%, #162445 0%, transparent 60%),
+        radial-gradient(900px 600px at 120% 0%, #1b2747 0%, transparent 55%),
+        var(--bg);
+      background-repeat: no-repeat;
+      min-height: 100svh;
+    }
+    .wrap{max-width:1100px; margin:0 auto; padding:24px}
+    h1.page-title{text-align:center; font-size:clamp(28px,6vw,60px); font-weight:800; margin:0 0 24px;}
+    .grid{display:grid; grid-template-columns: repeat(auto-fill,minmax(240px,1fr)); gap:14px}
+    .card{
+      position:relative; background:rgba(17,24,38,.6); border:1px solid #22314f; border-radius:var(--radius);
+      overflow:hidden; transition:.2s
+    }
+    .card:hover{transform:translateY(-2px); box-shadow:0 8px 30px rgba(0,0,0,.25)}
+    .cover{height:200px; background:#22314f; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;}
+    .cover img{width:100%; height:100%; object-fit:cover}
+    .icon{opacity:.8}
+    .body{padding:12px 14px}
+    .title{margin:0; font-size:16px}
+    .desc{margin:6px 0 0; color:var(--muted); font-size:13px}
+    .title-wrap{
+      position: relative;
+      display:flex; align-items:center; gap:8px; justify-content:space-between;
+      z-index:2;
+    }
+    .copy-btn{
+      background-color: #1A7ECA;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      border-radius: 6px;
+      transition: all .2s;
+      position: relative;
+      z-index: 2;
+      min-width: 38px;
+      height: 38px;
+    }
+    .copy-btn:hover{ background-color: #1669a7; transform: scale(1.1); }
+    .link{position:absolute; inset:0; z-index:1}
+  </style>
+</head>
+<body>
+
+  <div class="wrap">
+    <h1 class="page-title">Kullanım Kılavuzları</h1>
+    <div id="grid" class="grid"></div>
+  </div>
+
+  <template id="cardTemplate">
+    <article class="card">
+      <div class="cover"></div>
+      <div class="body">
+        <div class="title-wrap">
+          <h3 class="title"></h3>
+          <button class="copy-btn" type="button" title="Linki kopyala">
+            <img src="copy.png" alt="Kopyala" width="22" height="22">
+          </button>
+        </div>
+        <p class="desc">Ürün sayfasına gitmek için tıklayın.</p>
+      </div>
+      <a class="link" target="_self"></a>
+    </article>
+  </template>
+
+  <script>
+    const PROJECTS = [
+      {
+        slug: "12-24V-ac-kapat-led-kontrol-unitesi",
+        title: "12-24V AC Kapat LED Kontrol Ünitesi",
+        image: "12-24V-ac-kapat-led-kontrol-unitesi/s-dimmer.jpg",
+      },
+      {
+        slug: "s-dimmer",
+        title: "S Dimmer",
+        image: "s-dimmer/s-dimmer.png",
+      },
+      {
+        slug: "tilt-piston-motor-kontrol-unitesi",
+        title: "Tilt Piston Motor Kontrol Ünitesi",
+        image: "tilt-piston-motor-kontrol-unitesi/tilt-piston-motor-kontrol-unitesi.png",
+      },
+      {
+        slug: "sftr-led-dimmer",
+        title: "SFTR LED Dimmer",
+        image: "sftr-led-dimmer/sftr-led-dimmer.png",
+      },
+      {
+        slug: "sftr-led-dimmer-multi",
+        title: "SFTR LED Dimmer Multi",
+        image: "sftr-led-dimmer-multi/sftr-led-dimmer-multi.png",
+      },
+      {
+        slug: "rgb-led-dimmer",
+        title: "RGB LED Dimmer",
+        image: "rgb-led-dimmer/rgb-led-dimmer.png",
+      },
+      {
+        slug: "pano-modelleri",
+        title: "Pano Modelleri",
+        image: "Pano/s-bioklimatik-pano/s-bioklimatik-pano.jpg", // Örnek bir pano görseli
+        href: "/Pano/Pano.html"
+      }
+    ];
+
+    const grid = document.getElementById('grid');
+    const template = document.getElementById('cardTemplate');
+
+    function makeCard(p){
+      const card = template.content.cloneNode(true).firstElementChild;
+      const href = p.href || `/${p.slug}/${p.slug}.html`;
+      
+      card.querySelector('.link').href = href;
+      card.querySelector('.title').textContent = p.title;
+
+      const copyBtn = card.querySelector('.copy-btn');
+      const originalHtml = copyBtn.innerHTML;
+
+      copyBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const absoluteUrl = window.location.origin + href;
+        
+        navigator.clipboard.writeText(absoluteUrl).then(()=>{
+          copyBtn.textContent = "✅";
+          copyBtn.style.backgroundColor = "#22c55e";
+          setTimeout(()=> {
+            copyBtn.innerHTML = originalHtml;
+            copyBtn.style.backgroundColor = "";
+          }, 1500);
+        }).catch(()=>{
+          copyBtn.textContent = "❌";
+          setTimeout(()=> copyBtn.innerHTML = originalHtml, 1500);
+        });
+      });
+
+      if(p.image){
+        const img = new Image();
+        img.src = p.image;
+        img.alt = p.title;
+        img.loading = 'lazy';
+        card.querySelector('.cover').appendChild(img);
+      } else {
+        card.querySelector('.cover').innerHTML =
+          '<svg class="icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 3a6 6 0 0 0-6 6c0 2.22 1.2 4.15 3 5.2V18a3 3 0 0 0 3 3 3 3 0 0 0 3-3v-3.8c1.8-1.05 3-2.98 3-5.2a6 6 0 0 0-6-6Z"/></svg>';
+      }
+
+      return card;
+    }
+
+    function bootstrap(){
+      grid.innerHTML = '';
+      PROJECTS.forEach(p => grid.appendChild(makeCard(p)));
+    }
+    
+    bootstrap();
+  </script>
+</body>
+</html>

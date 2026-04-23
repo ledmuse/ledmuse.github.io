@@ -13,8 +13,8 @@
         radial-gradient(1000px 700px at -10% -20%, #162445 0%, transparent 60%),
         radial-gradient(900px 600px at 120% 0%, #1b2747 0%, transparent 55%),
         var(--bg);
-      background-repeat: no-repeat, no-repeat, no-repeat; /* mobilde tekrar etmesin */
-      min-height: 100svh; /* mobil yükseklik düzeltmesi */
+      background-repeat: no-repeat;
+      min-height: 100svh;
     }
     .wrap{max-width:1100px; margin:0 auto; padding:24px}
     h1.page-title{text-align:center; font-size:clamp(28px,6vw,60px); font-weight:800; margin:0 0 24px;}
@@ -24,41 +24,39 @@
       overflow:hidden; transition:.2s
     }
     .card:hover{transform:translateY(-2px); box-shadow:0 8px 30px rgba(0,0,0,.25)}
-    .cover{height:25hv; background:#22314f; display:flex; align-items:center; justify-content:center; position:relative}
+    .cover{height:200px; background:#22314f; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;}
     .cover img{width:100%; height:100%; object-fit:cover}
     .icon{opacity:.8}
     .body{padding:12px 14px}
     .title{margin:0; font-size:16px}
     .desc{margin:6px 0 0; color:var(--muted); font-size:13px}
-    .meta{font-size:12px; color:#a9bbda}
-    .link{position:absolute; inset:0; z-index:1} /* tüm kartı tıklanabilir yapar */
-
-    /* başlık + kopyala alanı */
     .title-wrap{
       position: relative;
       display:flex; align-items:center; gap:8px; justify-content:space-between;
-      z-index:2; /* link overlay'in üstünde */
+      z-index:2;
     }
-.copy-btn{
-  background-color: #1A7ECA;   /* 🔵 mavi arka plan */
-  border: none;
-  color: #fff;                 /* ikon/beyaz yazı */
-  cursor: pointer;
-  font-size: 20px;
-  line-height: 1;
-  padding: 6px 10px;           /* içine biraz boşluk */
-  border-radius: 6px;          /* köşeler yumuşak */
-  transition: background-color .2s, transform .2s;
-  position: relative;
-  z-index: 2;
-}
-.copy-btn:hover{
-  background-color: #1669a7;   /* hover için biraz koyu tonu */
-  transform: scale(1.1);
-}
+    .copy-btn{
+      background-color: #1A7ECA;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      border-radius: 6px;
+      transition: all .2s;
+      position: relative;
+      z-index: 2;
+      min-width: 38px;
+      height: 38px;
+    }
+    .copy-btn:hover{ background-color: #1669a7; transform: scale(1.1); }
+    .link{position:absolute; inset:0; z-index:1}
   </style>
 </head>
 <body>
+
   <div class="wrap">
     <h1 class="page-title">Kullanım Kılavuzları</h1>
     <div id="grid" class="grid"></div>
@@ -71,79 +69,53 @@
         <div class="title-wrap">
           <h3 class="title"></h3>
           <button class="copy-btn" type="button" title="Linki kopyala">
-            <img src="copy.png" alt="Kopyala" width="25" height="25">
+            <img src="copy.png" alt="Kopyala" width="22" height="22">
           </button>
         </div>
         <p class="desc">Ürün sayfasına gitmek için tıklayın.</p>
-        <div class="meta"></div>
       </div>
       <a class="link" target="_self"></a>
     </article>
   </template>
 
   <script>
-    // Not: href alanı verilmezse varsayılan link /<slug>/ olur (index.html varsa açılır).
     const PROJECTS = [
       {
         slug: "12-24V-ac-kapat-led-kontrol-unitesi",
         title: "12-24V AC Kapat LED Kontrol Ünitesi",
         image: "12-24V-ac-kapat-led-kontrol-unitesi/s-dimmer.jpg",
-        // href: "/12-24V-ac-kapat-led-kontrol-unitesi/12-24V-ac-kapat-led-kontrol-unitesi.html"
       },
       {
         slug: "s-dimmer",
         title: "S Dimmer",
         image: "s-dimmer/s-dimmer.png",
-        // href: "/s-dimmer/s-dimmer.html"
       },
       {
         slug: "tilt-piston-motor-kontrol-unitesi",
         title: "Tilt Piston Motor Kontrol Ünitesi",
         image: "tilt-piston-motor-kontrol-unitesi/tilt-piston-motor-kontrol-unitesi.png",
-        // href: "/tilt-piston-motor-kontrol-unitesi/tilt-piston-motor-kontrol-unitesi.html"
       },
       {
         slug: "sftr-led-dimmer",
         title: "SFTR LED Dimmer",
         image: "sftr-led-dimmer/sftr-led-dimmer.png",
-        // href: "/sftr-led-dimmer/sftr-led-dimmer.html"
       },
       {
         slug: "sftr-led-dimmer-multi",
         title: "SFTR LED Dimmer Multi",
         image: "sftr-led-dimmer-multi/sftr-led-dimmer-multi.png",
-        // href: "/sftr-led-dimmer-multi/sftr-led-dimmer-multi.html"
       },
       {
         slug: "rgb-led-dimmer",
         title: "RGB LED Dimmer",
         image: "rgb-led-dimmer/rgb-led-dimmer.png",
-        // href: "/rgb-led-dimmer/rgb-led-dimmer.html"
       },
       {
-        slug: "s-bioklimatik-pano",
-        title: "S Bioklimatik Pano",
-        image: "s-bioklimatik-pano/s-bioklimatik-pano.jpg",
-        // href: "/s-bioklimatik-pano/s-bioklimatik-pano.html"
-      },
-      {
-        slug: "cuppon-bioklimatik-pano",
-        title: "Cuppon Bioklimatik Pano",
-        image: "cuppon-bioklimatik-pano/cuppon-bioklimatik-pano.jpg",
-        // href: "/cuppon-bioklimatik-pano/cuppon-bioklimatik-pano.html"
-      },
-      {
-        slug: "s-tilt-bioklimatik-pano",
-        title: "S Tilt Bioklimatik Pano",
-        image: "s-tilt-bioklimatik-pano/s-tilt-bioklimatik-pano.jpg",
-        // href: "/s-tilt-bioklimatik-pano/s-tilt-bioklimatik-pano.html"
-      },
-      {
-        slug: "cuppon-tilt-pano",
-        title: "Cuppon Tilt Pano",
-        image: "cuppon-tilt-pano/cuppon-tilt-pano.png",
-        // href: "/cuppon-tilt-pano/cuppon-tilt-pano.html"
-      },
+        slug: "pano-modelleri",
+        title: "Pano Modelleri",
+        image: "Pano/s-bioklimatik-pano/s-bioklimatik-pano.jpg", // Örnek bir pano görseli
+        href: "/Pano/Pano.html"
+      }
     ];
 
     const grid = document.getElementById('grid');
@@ -151,31 +123,32 @@
 
     function makeCard(p){
       const card = template.content.cloneNode(true).firstElementChild;
-
-      // Hedef link (varsayılan: /<slug>/)
-      const href = p.href || `/${p.slug}/${p.slug}`;
+      const href = p.href || `/${p.slug}/${p.slug}.html`;
+      
       card.querySelector('.link').href = href;
-
-      // Başlık
       card.querySelector('.title').textContent = p.title;
 
-      // Kopyala butonu: tam URL kopyalar
       const copyBtn = card.querySelector('.copy-btn');
+      const originalHtml = copyBtn.innerHTML;
+
       copyBtn.addEventListener('click', (e) => {
-        e.stopPropagation(); // linke tıklamayı bozmasın
+        e.stopPropagation();
         e.preventDefault();
-        const absoluteUrl = (href.startsWith('http') ? href : (window.location.origin + href));
+        const absoluteUrl = window.location.origin + href;
+        
         navigator.clipboard.writeText(absoluteUrl).then(()=>{
-          const old = copyBtn.textContent;
-          copyBtn.textContent = "✅ Kopyalandı";
-          setTimeout(()=> copyBtn.textContent = old, 1500);
+          copyBtn.textContent = "✅";
+          copyBtn.style.backgroundColor = "#22c55e";
+          setTimeout(()=> {
+            copyBtn.innerHTML = originalHtml;
+            copyBtn.style.backgroundColor = "";
+          }, 1500);
         }).catch(()=>{
-          copyBtn.textContent = "⛔";
-          setTimeout(()=> copyBtn.textContent = '', 1500);
+          copyBtn.textContent = "❌";
+          setTimeout(()=> copyBtn.innerHTML = originalHtml, 1500);
         });
       });
 
-      // Görsel
       if(p.image){
         const img = new Image();
         img.src = p.image;
@@ -184,11 +157,8 @@
         card.querySelector('.cover').appendChild(img);
       } else {
         card.querySelector('.cover').innerHTML =
-          '<svg class="icon" width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3a6 6 0 0 0-6 6c0 2.22 1.2 4.15 3 5.2V18a3 3 0 0 0 3 3 3 3 0 0 0 3-3v-3.8c1.8-1.05 3-2.98 3-5.2a6 6 0 0 0-6-6Z" stroke="currentColor" stroke-width="1.2"/><path d="M9 11h6M8 14h8" stroke="currentColor" stroke-width="1.2"/></svg>';
+          '<svg class="icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 3a6 6 0 0 0-6 6c0 2.22 1.2 4.15 3 5.2V18a3 3 0 0 0 3 3 3 3 0 0 0 3-3v-3.8c1.8-1.05 3-2.98 3-5.2a6 6 0 0 0-6-6Z"/></svg>';
       }
-
-      // Alt bilgi (görüntü amaçlı)
-     // card.querySelector('.meta').textContent = href.replace(/^\//,'');
 
       return card;
     }
@@ -197,6 +167,7 @@
       grid.innerHTML = '';
       PROJECTS.forEach(p => grid.appendChild(makeCard(p)));
     }
+    
     bootstrap();
   </script>
 </body>
